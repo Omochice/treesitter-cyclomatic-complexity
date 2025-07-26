@@ -1,0 +1,20 @@
+# StyLua configuration for treesitter-cyclomatic-complexity
+
+# Indentation
+indent_type = "Spaces"
+indent_width = 2
+
+# Line endings  
+line_endings = "Unix"
+
+# Quote style
+quote_style = "AutoPreferSingle"
+
+# Collapse simple statements
+collapse_simple_statement = "Never"
+
+# Call parentheses
+call_parentheses = "Always"
+
+# Function call spacing
+function_calls_spacing = "NoSpacing"
