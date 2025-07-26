@@ -17,7 +17,7 @@ A Neovim plugin that displays cyclomatic complexity values next to functions and
 
 ```lua
 use {
-  'your-username/treesitter-cyclomatic-complexity',
+  'Omochice/treesitter-cyclomatic-complexity',
   requires = 'nvim-treesitter/nvim-treesitter'
 }
 ```
@@ -26,7 +26,7 @@ use {
 
 ```lua
 {
-  'your-username/treesitter-cyclomatic-complexity',
+  'Omochice/treesitter-cyclomatic-complexity',
   dependencies = 'nvim-treesitter/nvim-treesitter',
   config = function()
     require('treesitter-cyclomatic-complexity').setup()
@@ -38,7 +38,7 @@ use {
 
 ```vim
 Plug 'nvim-treesitter/nvim-treesitter'
-Plug 'your-username/treesitter-cyclomatic-complexity'
+Plug 'Omochice/treesitter-cyclomatic-complexity'
 ```
 
 ## Requirements
