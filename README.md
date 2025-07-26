@@ -1,5 +1,8 @@
 # nvim-treesitter Cyclomatic Complexity Plugin
 
+> [!WARNING]
+> This plugin is under developing.
+
 A Neovim plugin that displays cyclomatic complexity values next to functions and loops using nvim-treesitter for code parsing.
 
 ## Features
