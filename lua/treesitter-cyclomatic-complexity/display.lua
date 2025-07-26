@@ -98,6 +98,52 @@ M.toggle_display = function(bufnr)
   end
 end
 
+M.get_stats = function(bufnr)
+  if not vim.api.nvim_buf_is_valid(bufnr) then
+    return nil
+  end
+  
+  local lang = vim.treesitter.language.get_lang(vim.bo[bufnr].filetype)
+  if not lang or not config.get('languages')[lang] then
+    return nil
+  end
+  
+  local complexities = complexity.get_all_complexities(bufnr, lang)
+  local stats = {
+    total_functions = 0,
+    total_loops = 0,
+    avg_complexity = 0,
+    max_complexity = 0,
+    distribution = { low = 0, medium = 0, high = 0, very_high = 0 }
+  }
+  
+  local total_complexity = 0
+  local thresholds = config.get('thresholds')
+  
+  for _, result in ipairs(complexities) do
+    total_complexity = total_complexity + result.complexity
+    
+    if result.type == 'function' then
+      stats.total_functions = stats.total_functions + 1
+    elseif result.type == 'loop' then
+      stats.total_loops = stats.total_loops + 1
+    end
+    
+    if result.complexity > stats.max_complexity then
+      stats.max_complexity = result.complexity
+    end
+    
+    local level = complexity.get_complexity_level(result.complexity, thresholds)
+    stats.distribution[level] = stats.distribution[level] + 1
+  end
+  
+  if #complexities > 0 then
+    stats.avg_complexity = total_complexity / #complexities
+  end
+  
+  return stats
+end
+
 M.setup = function()
   setup_highlight_groups()
 end

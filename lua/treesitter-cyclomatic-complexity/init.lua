@@ -94,4 +94,22 @@ M.clear_buffer = function(bufnr)
   display.clear_complexity(bufnr)
 end
 
+M.refresh = function()
+  -- Refresh all open buffers
+  for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
+    if vim.api.nvim_buf_is_loaded(bufnr) and utils.is_buffer_supported(bufnr) then
+      M.update_buffer(bufnr)
+    end
+  end
+end
+
+M.set_config = function(new_config)
+  config.update(new_config)
+  M.refresh()
+end
+
+M.get_config = function()
+  return config.get()
+end
+
 return M
