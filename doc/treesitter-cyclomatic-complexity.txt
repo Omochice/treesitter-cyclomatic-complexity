@@ -1,0 +1,241 @@
+*treesitter-cyclomatic-complexity.txt*  Display cyclomatic complexity with treesitter
+
+================================================================================
+CONTENTS                                *treesitter-cyclomatic-complexity-contents*
+
+1. Introduction ........................ |treesitter-cyclomatic-complexity-intro|
+2. Requirements ........................ |treesitter-cyclomatic-complexity-requirements|
+3. Installation ........................ |treesitter-cyclomatic-complexity-installation|
+4. Configuration ....................... |treesitter-cyclomatic-complexity-configuration|
+5. Commands ............................ |treesitter-cyclomatic-complexity-commands|
+6. Functions ........................... |treesitter-cyclomatic-complexity-functions|
+7. Examples ............................ |treesitter-cyclomatic-complexity-examples|
+
+================================================================================
+1. INTRODUCTION                        *treesitter-cyclomatic-complexity-intro*
+
+The treesitter-cyclomatic-complexity plugin displays cyclomatic complexity 
+values next to functions and loops using nvim-treesitter for code parsing.
+
+Cyclomatic complexity is a software metric used to indicate the complexity of 
+a program. It measures the number of linearly independent paths through a 
+program's source code.
+
+Features:
+- Real-time complexity analysis using nvim-treesitter
+- Color-coded complexity levels (low/medium/high/very high)
+- Multi-language support (Lua, JavaScript, TypeScript, Python, C, C++, Java, Go, Rust)
+- Performance optimized with debounced updates
+- Highly configurable display and thresholds
+- Buffer statistics and complexity distribution
+
+================================================================================
+2. REQUIREMENTS                    *treesitter-cyclomatic-complexity-requirements*
+
+- Neovim 0.8+
+- nvim-treesitter plugin
+- Treesitter parsers for your target languages
+
+To install language parsers:
+>
+    :TSInstall lua javascript python c cpp java go rust
+<
+
+================================================================================
+3. INSTALLATION                    *treesitter-cyclomatic-complexity-installation*
+
+Using packer.nvim:
+>
+    use {
+      'your-username/treesitter-cyclomatic-complexity',
+      requires = 'nvim-treesitter/nvim-treesitter'
+    }
+<
+
+Using lazy.nvim:
+>
+    {
+      'your-username/treesitter-cyclomatic-complexity',
+      dependencies = 'nvim-treesitter/nvim-treesitter',
+      config = function()
+        require('treesitter-cyclomatic-complexity').setup()
+      end
+    }
+<
+
+================================================================================
+4. CONFIGURATION                  *treesitter-cyclomatic-complexity-configuration*
+
+Setup with default options:
+>
+    require('treesitter-cyclomatic-complexity').setup()
+<
+
+Full configuration options:
+>
+    require('treesitter-cyclomatic-complexity').setup({
+      enabled = true,
+      auto_update = true,
+      display = {
+        format = "CC: %d",
+        highlight = "Comment",
+        position = "eol"
+      },
+      thresholds = {
+        low = 5,
+        medium = 10,
+        high = 15
+      },
+      languages = {
+        lua = true,
+        javascript = true,
+        typescript = true,
+        python = true,
+        c = true,
+        cpp = true,
+        java = true,
+        go = true,
+        rust = true
+      }
+    })
+<
+
+                                   *g:treesitter_cyclomatic_complexity*
+Vim configuration variable:
+>
+    let g:treesitter_cyclomatic_complexity = {
+      \ 'enabled': v:true,
+      \ 'thresholds': {
+      \   'low': 3,
+      \   'medium': 7,
+      \   'high': 12
+      \ }
+      \}
+<
+
+================================================================================
+5. COMMANDS                        *treesitter-cyclomatic-complexity-commands*
+
+                                   *:CyclomaticComplexityEnable*
+:CyclomaticComplexityEnable
+    Enable complexity display for all supported buffers.
+
+                                   *:CyclomaticComplexityDisable*
+:CyclomaticComplexityDisable
+    Disable complexity display and clear all virtual text.
+
+                                   *:CyclomaticComplexityToggle*
+:CyclomaticComplexityToggle
+    Toggle complexity display on/off.
+
+                                   *:CyclomaticComplexityUpdate*
+:CyclomaticComplexityUpdate
+    Update complexity display for the current buffer.
+
+                                   *:CyclomaticComplexityClear*
+:CyclomaticComplexityClear
+    Clear complexity display for the current buffer.
+
+                                   *:CyclomaticComplexityRefresh*
+:CyclomaticComplexityRefresh
+    Refresh complexity display for all open buffers.
+
+================================================================================
+6. FUNCTIONS                      *treesitter-cyclomatic-complexity-functions*
+
+require('treesitter-cyclomatic-complexity').setup({opts})
+    Initialize the plugin with configuration options.
+
+require('treesitter-cyclomatic-complexity').enable()
+    Enable the plugin and start displaying complexity values.
+
+require('treesitter-cyclomatic-complexity').disable()
+    Disable the plugin and clear all displays.
+
+require('treesitter-cyclomatic-complexity').toggle()
+    Toggle the plugin's enabled state.
+
+require('treesitter-cyclomatic-complexity').update_buffer({bufnr})
+    Update complexity display for a specific buffer.
+
+require('treesitter-cyclomatic-complexity').clear_buffer({bufnr})
+    Clear complexity display for a specific buffer.
+
+require('treesitter-cyclomatic-complexity').refresh()
+    Refresh complexity display for all open buffers.
+
+require('treesitter-cyclomatic-complexity').set_config({config})
+    Update plugin configuration at runtime.
+
+require('treesitter-cyclomatic-complexity').get_config()
+    Get current plugin configuration.
+
+require('treesitter-cyclomatic-complexity.display').get_stats({bufnr})
+    Get complexity statistics for a buffer.
+    Returns:
+    {
+      total_functions = number,
+      total_loops = number,
+      avg_complexity = number,
+      max_complexity = number,
+      distribution = {
+        low = number,
+        medium = number,
+        high = number,
+        very_high = number
+      }
+    }
+
+================================================================================
+7. EXAMPLES                        *treesitter-cyclomatic-complexity-examples*
+
+Basic setup:
+>
+    require('treesitter-cyclomatic-complexity').setup()
+<
+
+Custom thresholds:
+>
+    require('treesitter-cyclomatic-complexity').setup({
+      thresholds = {
+        low = 3,
+        medium = 7,
+        high = 12
+      }
+    })
+<
+
+Disable auto-update for performance:
+>
+    require('treesitter-cyclomatic-complexity').setup({
+      auto_update = false
+    })
+<
+
+Enable only specific languages:
+>
+    require('treesitter-cyclomatic-complexity').setup({
+      languages = {
+        lua = true,
+        python = true,
+        javascript = false,
+        typescript = false,
+        c = false,
+        cpp = false,
+        java = false,
+        go = false,
+        rust = false
+      }
+    })
+<
+
+Get buffer statistics:
+>
+    local display = require('treesitter-cyclomatic-complexity.display')
+    local stats = display.get_stats(0)  -- current buffer
+    print('Average complexity: ' .. stats.avg_complexity)
+    print('Functions with high complexity: ' .. stats.distribution.high)
+<
+
+================================================================================
+vim:tw=78:ts=8:ft=help:norl:
