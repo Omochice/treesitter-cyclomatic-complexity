@@ -1,9 +1,9 @@
-local helper = require('tests.test_helper')
-local parser = require('treesitter-cyclomatic-complexity.parser')
+local helper = require("tests.test_helper")
+local parser = require("treesitter-cyclomatic-complexity.parser")
 
 describe("parser module", function()
   local test_bufnr
-  
+
   after_each(function()
     if test_bufnr then
       helper.cleanup_buffer(test_bufnr)
@@ -14,11 +14,11 @@ describe("parser module", function()
   describe("language support", function()
     it("returns supported languages", function()
       local languages = parser.get_supported_languages()
-      assert(type(languages) == 'table', "Should return a table")
+      assert(type(languages) == "table", "Should return a table")
       assert(#languages > 0, "Should return at least one language")
-      
+
       -- Check for expected languages
-      local expected = { 'lua', 'javascript', 'python', 'c', 'cpp', 'java', 'go', 'rust', 'typescript' }
+      local expected = { "lua", "javascript", "python", "c", "cpp", "java", "go", "rust", "typescript" }
       for _, lang in ipairs(expected) do
         local found = false
         for _, supported in ipairs(languages) do
@@ -32,10 +32,10 @@ describe("parser module", function()
     end)
 
     it("correctly identifies supported languages", function()
-      helper.assert.is_true(parser.is_language_supported('lua'))
-      helper.assert.is_true(parser.is_language_supported('javascript'))
-      helper.assert.is_true(parser.is_language_supported('python'))
-      helper.assert.is_false(parser.is_language_supported('unsupported'))
+      helper.assert.is_true(parser.is_language_supported("lua"))
+      helper.assert.is_true(parser.is_language_supported("javascript"))
+      helper.assert.is_true(parser.is_language_supported("python"))
+      helper.assert.is_false(parser.is_language_supported("unsupported"))
       helper.assert.is_false(parser.is_language_supported(nil))
     end)
   end)
@@ -51,18 +51,18 @@ local function local_func()
   print("hello")
 end
 ]]
-      test_bufnr = helper.create_test_buffer(content, 'lua')
+      test_bufnr = helper.create_test_buffer(content, "lua")
       assert(helper.wait_for_treesitter(test_bufnr), "Treesitter parsing failed")
-      
-      local function_nodes = parser.get_function_nodes(test_bufnr, 'lua')
+
+      local function_nodes = parser.get_function_nodes(test_bufnr, "lua")
       helper.assert_node_count(2, function_nodes, "Should find 2 functions")
-      
+
       -- Check node properties
       for _, node_info in ipairs(function_nodes) do
         assert(node_info.node ~= nil, "Node should not be nil")
         assert(node_info.start_row ~= nil, "Start row should be set")
         assert(node_info.end_row ~= nil, "End row should be set")
-        assert(node_info.type == 'function', "Type should be 'function'")
+        assert(node_info.type == "function", "Type should be 'function'")
       end
     end)
 
@@ -80,15 +80,15 @@ repeat
   action()
 until done
 ]]
-      test_bufnr = helper.create_test_buffer(content, 'lua')
+      test_bufnr = helper.create_test_buffer(content, "lua")
       assert(helper.wait_for_treesitter(test_bufnr), "Treesitter parsing failed")
-      
-      local loop_nodes = parser.get_loop_nodes(test_bufnr, 'lua')
+
+      local loop_nodes = parser.get_loop_nodes(test_bufnr, "lua")
       helper.assert_node_count(3, loop_nodes, "Should find 3 loops")
-      
+
       -- Check that all are loop type
       for _, node_info in ipairs(loop_nodes) do
-        assert(node_info.type == 'loop', "Type should be 'loop'")
+        assert(node_info.type == "loop", "Type should be 'loop'")
       end
     end)
 
@@ -98,15 +98,15 @@ function test_function()
   return "hello world"
 end
 ]]
-      test_bufnr = helper.create_test_buffer(content, 'lua')
+      test_bufnr = helper.create_test_buffer(content, "lua")
       assert(helper.wait_for_treesitter(test_bufnr), "Treesitter parsing failed")
-      
-      local function_nodes = parser.get_function_nodes(test_bufnr, 'lua')
+
+      local function_nodes = parser.get_function_nodes(test_bufnr, "lua")
       helper.assert_node_count(1, function_nodes, "Should find 1 function")
-      
+
       local node_text = parser.get_node_text(function_nodes[1].node, test_bufnr)
-      assert(type(node_text) == 'string', "Node text should be a string")
-      assert(string.find(node_text, 'test_function'), "Node text should contain function name")
+      assert(type(node_text) == "string", "Node text should be a string")
+      assert(string.find(node_text, "test_function"), "Node text should contain function name")
     end)
 
     it("gets node range correctly", function()
@@ -116,14 +116,14 @@ function test()
   return x
 end
 ]]
-      test_bufnr = helper.create_test_buffer(content, 'lua')
+      test_bufnr = helper.create_test_buffer(content, "lua")
       assert(helper.wait_for_treesitter(test_bufnr), "Treesitter parsing failed")
-      
-      local function_nodes = parser.get_function_nodes(test_bufnr, 'lua')
+
+      local function_nodes = parser.get_function_nodes(test_bufnr, "lua")
       helper.assert_node_count(1, function_nodes, "Should find 1 function")
-      
+
       local range = parser.get_node_range(function_nodes[1].node)
-      assert(type(range) == 'table', "Range should be a table")
+      assert(type(range) == "table", "Range should be a table")
       assert(range.start_row ~= nil, "Start row should be set")
       assert(range.start_col ~= nil, "Start col should be set")
       assert(range.end_row ~= nil, "End row should be set")
@@ -153,10 +153,10 @@ class MyClass {
   }
 }
 ]]
-      test_bufnr = helper.create_test_buffer(content, 'javascript')
+      test_bufnr = helper.create_test_buffer(content, "javascript")
       assert(helper.wait_for_treesitter(test_bufnr), "Treesitter parsing failed")
-      
-      local function_nodes = parser.get_function_nodes(test_bufnr, 'javascript')
+
+      local function_nodes = parser.get_function_nodes(test_bufnr, "javascript")
       helper.assert_node_count(4, function_nodes, "Should find 4 functions")
     end)
 
@@ -182,10 +182,10 @@ do {
   action();
 } while (condition);
 ]]
-      test_bufnr = helper.create_test_buffer(content, 'javascript')
+      test_bufnr = helper.create_test_buffer(content, "javascript")
       assert(helper.wait_for_treesitter(test_bufnr), "Treesitter parsing failed")
-      
-      local loop_nodes = parser.get_loop_nodes(test_bufnr, 'javascript')
+
+      local loop_nodes = parser.get_loop_nodes(test_bufnr, "javascript")
       helper.assert_node_count(5, loop_nodes, "Should find 5 loops")
     end)
   end)
@@ -199,10 +199,10 @@ def regular_function():
 async def async_function():
     return await something()
 ]]
-      test_bufnr = helper.create_test_buffer(content, 'python')
+      test_bufnr = helper.create_test_buffer(content, "python")
       assert(helper.wait_for_treesitter(test_bufnr), "Treesitter parsing failed")
-      
-      local function_nodes = parser.get_function_nodes(test_bufnr, 'python')
+
+      local function_nodes = parser.get_function_nodes(test_bufnr, "python")
       helper.assert_node_count(2, function_nodes, "Should find 2 functions")
     end)
 
@@ -214,10 +214,10 @@ for item in items:
 while condition:
     action()
 ]]
-      test_bufnr = helper.create_test_buffer(content, 'python')
+      test_bufnr = helper.create_test_buffer(content, "python")
       assert(helper.wait_for_treesitter(test_bufnr), "Treesitter parsing failed")
-      
-      local loop_nodes = parser.get_loop_nodes(test_bufnr, 'python')
+
+      local loop_nodes = parser.get_loop_nodes(test_bufnr, "python")
       helper.assert_node_count(2, loop_nodes, "Should find 2 loops")
     end)
   end)
@@ -233,10 +233,10 @@ void helper_function(int x) {
     printf("%d", x);
 }
 ]]
-      test_bufnr = helper.create_test_buffer(content, 'c')
+      test_bufnr = helper.create_test_buffer(content, "c")
       assert(helper.wait_for_treesitter(test_bufnr), "Treesitter parsing failed")
-      
-      local function_nodes = parser.get_function_nodes(test_bufnr, 'c')
+
+      local function_nodes = parser.get_function_nodes(test_bufnr, "c")
       helper.assert_node_count(2, function_nodes, "Should find 2 functions")
     end)
 
@@ -254,10 +254,10 @@ do {
     action();
 } while (condition);
 ]]
-      test_bufnr = helper.create_test_buffer(content, 'c')
+      test_bufnr = helper.create_test_buffer(content, "c")
       assert(helper.wait_for_treesitter(test_bufnr), "Treesitter parsing failed")
-      
-      local loop_nodes = parser.get_loop_nodes(test_bufnr, 'c')
+
+      local loop_nodes = parser.get_loop_nodes(test_bufnr, "c")
       helper.assert_node_count(3, loop_nodes, "Should find 3 loops")
     end)
   end)
@@ -275,42 +275,42 @@ function test()
   end
 end
 ]]
-      test_bufnr = helper.create_test_buffer(content, 'lua')
+      test_bufnr = helper.create_test_buffer(content, "lua")
       assert(helper.wait_for_treesitter(test_bufnr), "Treesitter parsing failed")
-      
-      local function_nodes = parser.get_function_nodes(test_bufnr, 'lua')
+
+      local function_nodes = parser.get_function_nodes(test_bufnr, "lua")
       helper.assert_node_count(1, function_nodes, "Should find 1 function")
-      
-      local control_nodes = parser.get_control_flow_nodes(function_nodes[1].node, test_bufnr, 'lua')
+
+      local control_nodes = parser.get_control_flow_nodes(function_nodes[1].node, test_bufnr, "lua")
       assert(#control_nodes >= 3, "Should find at least 3 control flow nodes (if, for, while)")
     end)
   end)
 
   describe("error handling", function()
     it("handles unsupported language gracefully", function()
-      test_bufnr = helper.create_test_buffer("some content", 'unsupported')
-      
-      local function_nodes = parser.get_function_nodes(test_bufnr, 'unsupported')
+      test_bufnr = helper.create_test_buffer("some content", "unsupported")
+
+      local function_nodes = parser.get_function_nodes(test_bufnr, "unsupported")
       helper.assert_node_count(0, function_nodes, "Unsupported language should return empty array")
-      
-      local loop_nodes = parser.get_loop_nodes(test_bufnr, 'unsupported')
+
+      local loop_nodes = parser.get_loop_nodes(test_bufnr, "unsupported")
       helper.assert_node_count(0, loop_nodes, "Unsupported language should return empty array")
     end)
 
     it("handles invalid buffer gracefully", function()
       local invalid_bufnr = 99999
-      
-      local function_nodes = parser.get_function_nodes(invalid_bufnr, 'lua')
+
+      local function_nodes = parser.get_function_nodes(invalid_bufnr, "lua")
       helper.assert_node_count(0, function_nodes, "Invalid buffer should return empty array")
-      
-      local loop_nodes = parser.get_loop_nodes(invalid_bufnr, 'lua')
+
+      local loop_nodes = parser.get_loop_nodes(invalid_bufnr, "lua")
       helper.assert_node_count(0, loop_nodes, "Invalid buffer should return empty array")
     end)
 
     it("handles buffer without treesitter parser", function()
-      test_bufnr = helper.create_test_buffer("some content", 'text')
-      
-      local function_nodes = parser.get_function_nodes(test_bufnr, 'text')
+      test_bufnr = helper.create_test_buffer("some content", "text")
+
+      local function_nodes = parser.get_function_nodes(test_bufnr, "text")
       helper.assert_node_count(0, function_nodes, "Buffer without parser should return empty array")
     end)
   end)

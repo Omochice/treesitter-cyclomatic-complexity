@@ -4,7 +4,7 @@ local treesitter_path = vim.fn.stdpath("data") .. "/site/pack/packer/start/nvim-
 -- Install nvim-treesitter if not present
 if vim.fn.isdirectory(treesitter_path) == 0 then
   vim.fn.system({
-    "git", 
+    "git",
     "clone",
     "https://github.com/nvim-treesitter/nvim-treesitter",
     treesitter_path,

@@ -17,7 +17,7 @@ local queries = {
       (for_statement) @control
       (while_statement) @control
       (repeat_statement) @control
-    ]]
+    ]],
   },
   javascript = {
     functions = [[
@@ -43,7 +43,7 @@ local queries = {
       (switch_statement) @control
       (try_statement) @control
       (conditional_expression) @control
-    ]]
+    ]],
   },
   typescript = {
     functions = [[
@@ -69,7 +69,7 @@ local queries = {
       (switch_statement) @control
       (try_statement) @control
       (conditional_expression) @control
-    ]]
+    ]],
   },
   python = {
     functions = [[
@@ -87,7 +87,7 @@ local queries = {
       (try_statement) @control
       (with_statement) @control
       (conditional_expression) @control
-    ]]
+    ]],
   },
   c = {
     functions = [[
@@ -106,7 +106,7 @@ local queries = {
       (do_statement) @control
       (switch_statement) @control
       (conditional_expression) @control
-    ]]
+    ]],
   },
   cpp = {
     functions = [[
@@ -128,7 +128,7 @@ local queries = {
       (switch_statement) @control
       (try_statement) @control
       (conditional_expression) @control
-    ]]
+    ]],
   },
   java = {
     functions = [[
@@ -150,7 +150,7 @@ local queries = {
       (switch_expression) @control
       (try_statement) @control
       (ternary_expression) @control
-    ]]
+    ]],
   },
   go = {
     functions = [[
@@ -167,7 +167,7 @@ local queries = {
       (switch_statement) @control
       (type_switch_statement) @control
       (select_statement) @control
-    ]]
+    ]],
   },
   rust = {
     functions = [[
@@ -184,8 +184,8 @@ local queries = {
       (loop_expression) @control
       (for_expression) @control
       (while_expression) @control
-    ]]
-  }
+    ]],
+  },
 }
 
 M.get_supported_languages = function()
@@ -200,21 +200,21 @@ M.get_function_nodes = function(bufnr, lang)
   if not M.is_language_supported(lang) then
     return {}
   end
-  
+
   local parser = vim.treesitter.get_parser(bufnr, lang)
   if not parser then
     return {}
   end
-  
+
   local tree = parser:parse()[1]
   if not tree then
     return {}
   end
-  
+
   local root = tree:root()
   local query = vim.treesitter.query.parse(lang, queries[lang].functions)
   local nodes = {}
-  
+
   for _, node in query:iter_captures(root, bufnr) do
     local start_row, start_col, end_row, end_col = node:range()
     table.insert(nodes, {
@@ -223,10 +223,10 @@ M.get_function_nodes = function(bufnr, lang)
       start_col = start_col,
       end_row = end_row,
       end_col = end_col,
-      type = 'function'
+      type = "function",
     })
   end
-  
+
   return nodes
 end
 
@@ -234,21 +234,21 @@ M.get_loop_nodes = function(bufnr, lang)
   if not M.is_language_supported(lang) then
     return {}
   end
-  
+
   local parser = vim.treesitter.get_parser(bufnr, lang)
   if not parser then
     return {}
   end
-  
+
   local tree = parser:parse()[1]
   if not tree then
     return {}
   end
-  
+
   local root = tree:root()
   local query = vim.treesitter.query.parse(lang, queries[lang].loops)
   local nodes = {}
-  
+
   for _, node in query:iter_captures(root, bufnr) do
     local start_row, start_col, end_row, end_col = node:range()
     table.insert(nodes, {
@@ -257,10 +257,10 @@ M.get_loop_nodes = function(bufnr, lang)
       start_col = start_col,
       end_row = end_row,
       end_col = end_col,
-      type = 'loop'
+      type = "loop",
     })
   end
-  
+
   return nodes
 end
 
@@ -268,14 +268,14 @@ M.get_control_flow_nodes = function(node, bufnr, lang)
   if not M.is_language_supported(lang) then
     return {}
   end
-  
+
   local query = vim.treesitter.query.parse(lang, queries[lang].control_flow)
   local control_nodes = {}
-  
+
   for _, control_node in query:iter_captures(node, bufnr) do
     table.insert(control_nodes, control_node)
   end
-  
+
   return control_nodes
 end
 
@@ -289,7 +289,7 @@ M.get_node_range = function(node)
     start_row = start_row,
     start_col = start_col,
     end_row = end_row,
-    end_col = end_col
+    end_col = end_col,
   }
 end
 

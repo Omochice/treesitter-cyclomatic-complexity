@@ -1,9 +1,9 @@
-local helper = require('tests.test_helper')
-local complexity = require('treesitter-cyclomatic-complexity.complexity')
+local helper = require("tests.test_helper")
+local complexity = require("treesitter-cyclomatic-complexity.complexity")
 
 describe("complexity calculation", function()
   local test_bufnr
-  
+
   after_each(function()
     if test_bufnr then
       helper.cleanup_buffer(test_bufnr)
@@ -18,10 +18,10 @@ function simple()
   return 42
 end
 ]]
-      test_bufnr = helper.create_test_buffer(content, 'lua')
+      test_bufnr = helper.create_test_buffer(content, "lua")
       assert(helper.wait_for_treesitter(test_bufnr), "Treesitter parsing failed")
-      
-      local complexities = complexity.get_all_complexities(test_bufnr, 'lua')
+
+      local complexities = complexity.get_all_complexities(test_bufnr, "lua")
       helper.assert_node_count(1, complexities, "Should find 1 function")
       helper.assert_complexity(1, complexities[1].complexity, "Simple function should have complexity 1")
     end)
@@ -35,10 +35,10 @@ function with_if(x)
   return 0
 end
 ]]
-      test_bufnr = helper.create_test_buffer(content, 'lua')
+      test_bufnr = helper.create_test_buffer(content, "lua")
       assert(helper.wait_for_treesitter(test_bufnr), "Treesitter parsing failed")
-      
-      local complexities = complexity.get_all_complexities(test_bufnr, 'lua')
+
+      local complexities = complexity.get_all_complexities(test_bufnr, "lua")
       helper.assert_node_count(1, complexities, "Should find 1 function")
       helper.assert_complexity(2, complexities[1].complexity, "Function with if should have complexity 2")
     end)
@@ -53,21 +53,21 @@ function with_loops(items)
   end
 end
 ]]
-      test_bufnr = helper.create_test_buffer(content, 'lua')
+      test_bufnr = helper.create_test_buffer(content, "lua")
       assert(helper.wait_for_treesitter(test_bufnr), "Treesitter parsing failed")
-      
-      local complexities = complexity.get_all_complexities(test_bufnr, 'lua')
+
+      local complexities = complexity.get_all_complexities(test_bufnr, "lua")
       helper.assert_node_count(3, complexities, "Should find 1 function + 2 loops")
-      
+
       -- Find function complexity
       local func_complexity = nil
       for _, result in ipairs(complexities) do
-        if result.type == 'function' then
+        if result.type == "function" then
           func_complexity = result.complexity
           break
         end
       end
-      
+
       assert(func_complexity ~= nil, "Should find function complexity")
       helper.assert_complexity(3, func_complexity, "Function with for+while should have complexity 3")
     end)
@@ -90,20 +90,20 @@ function complex_function(data)
   end
 end
 ]]
-      test_bufnr = helper.create_test_buffer(content, 'lua')
+      test_bufnr = helper.create_test_buffer(content, "lua")
       assert(helper.wait_for_treesitter(test_bufnr), "Treesitter parsing failed")
-      
-      local complexities = complexity.get_all_complexities(test_bufnr, 'lua')
-      
+
+      local complexities = complexity.get_all_complexities(test_bufnr, "lua")
+
       -- Find function complexity
       local func_complexity = nil
       for _, result in ipairs(complexities) do
-        if result.type == 'function' then
+        if result.type == "function" then
           func_complexity = result.complexity
           break
         end
       end
-      
+
       assert(func_complexity ~= nil, "Should find function complexity")
       -- Expected: 1 (base) + 3 (if statements) + 1 (for) + 1 (while) = 6
       helper.assert_complexity(6, func_complexity, "Complex function should have complexity 6")
@@ -117,10 +117,10 @@ const simple = () => {
   return 42;
 };
 ]]
-      test_bufnr = helper.create_test_buffer(content, 'javascript')
+      test_bufnr = helper.create_test_buffer(content, "javascript")
       assert(helper.wait_for_treesitter(test_bufnr), "Treesitter parsing failed")
-      
-      local complexities = complexity.get_all_complexities(test_bufnr, 'javascript')
+
+      local complexities = complexity.get_all_complexities(test_bufnr, "javascript")
       helper.assert_node_count(1, complexities, "Should find 1 function")
       helper.assert_complexity(1, complexities[1].complexity, "Simple arrow function should have complexity 1")
     end)
@@ -138,10 +138,10 @@ function withSwitch(value) {
   }
 }
 ]]
-      test_bufnr = helper.create_test_buffer(content, 'javascript')
+      test_bufnr = helper.create_test_buffer(content, "javascript")
       assert(helper.wait_for_treesitter(test_bufnr), "Treesitter parsing failed")
-      
-      local complexities = complexity.get_all_complexities(test_bufnr, 'javascript')
+
+      local complexities = complexity.get_all_complexities(test_bufnr, "javascript")
       helper.assert_node_count(1, complexities, "Should find 1 function")
       -- Expected: 1 (base) + 1 (switch) + 2 (cases) = 4
       helper.assert_complexity(4, complexities[1].complexity, "Function with switch should have complexity 4")
@@ -157,10 +157,10 @@ function withTryCatch() {
   }
 }
 ]]
-      test_bufnr = helper.create_test_buffer(content, 'javascript')
+      test_bufnr = helper.create_test_buffer(content, "javascript")
       assert(helper.wait_for_treesitter(test_bufnr), "Treesitter parsing failed")
-      
-      local complexities = complexity.get_all_complexities(test_bufnr, 'javascript')
+
+      local complexities = complexity.get_all_complexities(test_bufnr, "javascript")
       helper.assert_node_count(1, complexities, "Should find 1 function")
       -- Expected: 1 (base) + 1 (try) + 1 (catch) = 3
       helper.assert_complexity(3, complexities[1].complexity, "Function with try-catch should have complexity 3")
@@ -177,10 +177,10 @@ def process_items(items):
     result = [item for item in items if item.valid]
     return result
 ]]
-      test_bufnr = helper.create_test_buffer(content, 'python')
+      test_bufnr = helper.create_test_buffer(content, "python")
       assert(helper.wait_for_treesitter(test_bufnr), "Treesitter parsing failed")
-      
-      local complexities = complexity.get_all_complexities(test_bufnr, 'python')
+
+      local complexities = complexity.get_all_complexities(test_bufnr, "python")
       helper.assert_node_count(1, complexities, "Should find 1 function")
       -- Expected: 1 (base) + 1 (if) = 2
       helper.assert_complexity(2, complexities[1].complexity, "Function with if should have complexity 2")
@@ -196,28 +196,32 @@ async def async_function():
     except Exception as e:
         return None
 ]]
-      test_bufnr = helper.create_test_buffer(content, 'python')
+      test_bufnr = helper.create_test_buffer(content, "python")
       assert(helper.wait_for_treesitter(test_bufnr), "Treesitter parsing failed")
-      
-      local complexities = complexity.get_all_complexities(test_bufnr, 'python')
+
+      local complexities = complexity.get_all_complexities(test_bufnr, "python")
       helper.assert_node_count(1, complexities, "Should find 1 function")
       -- Expected: 1 (base) + 1 (try) + 1 (if) + 1 (except) = 4
-      helper.assert_complexity(4, complexities[1].complexity, "Async function with try-except-if should have complexity 4")
+      helper.assert_complexity(
+        4,
+        complexities[1].complexity,
+        "Async function with try-except-if should have complexity 4"
+      )
     end)
   end)
 
   describe("complexity level classification", function()
     it("classifies complexity levels correctly", function()
       local thresholds = { low = 5, medium = 10, high = 15 }
-      
-      helper.assert.are.equal('low', complexity.get_complexity_level(1, thresholds))
-      helper.assert.are.equal('low', complexity.get_complexity_level(5, thresholds))
-      helper.assert.are.equal('medium', complexity.get_complexity_level(6, thresholds))
-      helper.assert.are.equal('medium', complexity.get_complexity_level(10, thresholds))
-      helper.assert.are.equal('high', complexity.get_complexity_level(11, thresholds))
-      helper.assert.are.equal('high', complexity.get_complexity_level(15, thresholds))
-      helper.assert.are.equal('very_high', complexity.get_complexity_level(16, thresholds))
-      helper.assert.are.equal('very_high', complexity.get_complexity_level(25, thresholds))
+
+      helper.assert.are.equal("low", complexity.get_complexity_level(1, thresholds))
+      helper.assert.are.equal("low", complexity.get_complexity_level(5, thresholds))
+      helper.assert.are.equal("medium", complexity.get_complexity_level(6, thresholds))
+      helper.assert.are.equal("medium", complexity.get_complexity_level(10, thresholds))
+      helper.assert.are.equal("high", complexity.get_complexity_level(11, thresholds))
+      helper.assert.are.equal("high", complexity.get_complexity_level(15, thresholds))
+      helper.assert.are.equal("very_high", complexity.get_complexity_level(16, thresholds))
+      helper.assert.are.equal("very_high", complexity.get_complexity_level(25, thresholds))
     end)
   end)
 
@@ -227,24 +231,24 @@ async def async_function():
 function empty() 
 end
 ]]
-      test_bufnr = helper.create_test_buffer(content, 'lua')
+      test_bufnr = helper.create_test_buffer(content, "lua")
       assert(helper.wait_for_treesitter(test_bufnr), "Treesitter parsing failed")
-      
-      local complexities = complexity.get_all_complexities(test_bufnr, 'lua')
+
+      local complexities = complexity.get_all_complexities(test_bufnr, "lua")
       helper.assert_node_count(1, complexities, "Should find 1 function")
       helper.assert_complexity(1, complexities[1].complexity, "Empty function should have complexity 1")
     end)
 
     it("handles unsupported language", function()
-      test_bufnr = helper.create_test_buffer("some content", 'unsupported')
-      
-      local complexities = complexity.get_all_complexities(test_bufnr, 'unsupported')
+      test_bufnr = helper.create_test_buffer("some content", "unsupported")
+
+      local complexities = complexity.get_all_complexities(test_bufnr, "unsupported")
       helper.assert_node_count(0, complexities, "Unsupported language should return no complexities")
     end)
 
     it("handles invalid buffer", function()
       local invalid_bufnr = 99999
-      local complexities = complexity.get_all_complexities(invalid_bufnr, 'lua')
+      local complexities = complexity.get_all_complexities(invalid_bufnr, "lua")
       helper.assert_node_count(0, complexities, "Invalid buffer should return no complexities")
     end)
   end)

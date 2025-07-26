@@ -39,10 +39,10 @@ function complex_function(data)
   if not data then
     return nil
   end
-  
+
   local result = {}
   for i, item in ipairs(data) do
-    if item.type == 'special' then
+    if item.type == "special" then
       while item.needs_processing do
         if item.can_process then
           item = process_item(item)
@@ -53,7 +53,7 @@ function complex_function(data)
     end
     table.insert(result, item)
   end
-  
+
   return result
 end
 
@@ -62,11 +62,11 @@ function function_with_repeat(x)
   if x <= 0 then
     return 0
   end
-  
+
   repeat
     x = x - 1
   until x <= 0
-  
+
   return x
 end
 
@@ -78,7 +78,7 @@ function outer_function()
     end
     return 0
   end
-  
+
   return inner_function(5)
 end
 

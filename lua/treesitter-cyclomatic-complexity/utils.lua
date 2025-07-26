@@ -17,7 +17,7 @@ M.get_buffer_language = function(bufnr)
   if not vim.api.nvim_buf_is_valid(bufnr) then
     return nil
   end
-  
+
   local filetype = vim.bo[bufnr].filetype
   return vim.treesitter.language.get_lang(filetype)
 end
@@ -27,8 +27,8 @@ M.is_buffer_supported = function(bufnr)
   if not lang then
     return false
   end
-  
-  local parser = require('treesitter-cyclomatic-complexity.parser')
+
+  local parser = require("treesitter-cyclomatic-complexity.parser")
   return parser.is_language_supported(lang)
 end
 
@@ -37,18 +37,18 @@ M.log = function(level, message)
     DEBUG = vim.log.levels.DEBUG,
     INFO = vim.log.levels.INFO,
     WARN = vim.log.levels.WARN,
-    ERROR = vim.log.levels.ERROR
+    ERROR = vim.log.levels.ERROR,
   }
-  
+
   if levels[level] then
-    vim.notify('[TreesitterCyclomaticComplexity] ' .. message, levels[level])
+    vim.notify("[TreesitterCyclomaticComplexity] " .. message, levels[level])
   end
 end
 
 M.safe_call = function(func, ...)
   local ok, result = pcall(func, ...)
   if not ok then
-    M.log('ERROR', 'Function call failed: ' .. tostring(result))
+    M.log("ERROR", "Function call failed: " .. tostring(result))
     return nil
   end
   return result

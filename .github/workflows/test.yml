@@ -2,9 +2,9 @@ name: Tests
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   test:
@@ -12,56 +12,56 @@ jobs:
     strategy:
       matrix:
         neovim_version: ['nightly', 'stable']
-    
+
     steps:
-    - uses: actions/checkout@v3
-    
-    - name: Install Neovim
-      uses: rhymond/setup-neovim@v1
-      with:
-        neovim-version: ${{ matrix.neovim_version }}
-    
-    - name: Install Lua and LuaRocks
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y lua5.1 liblua5.1-dev luarocks
-    
-    - name: Install vusted
-      run: |
-        sudo luarocks install vusted
-    
-    - name: Install dependencies
-      run: |
-        # Install nvim-treesitter
-        git clone https://github.com/nvim-treesitter/nvim-treesitter ~/.local/share/nvim/site/pack/packer/start/nvim-treesitter
-    
-    - name: Install treesitter parsers
-      run: |
-        nvim --headless -c "TSInstallSync lua javascript typescript python c cpp java go rust" -c "qa"
-    
-    - name: Run all tests
-      run: vusted tests/
+      - uses: actions/checkout@v3
+
+      - name: Install Neovim
+        uses: rhymond/setup-neovim@v1
+        with:
+          neovim-version: ${{ matrix.neovim_version }}
+
+      - name: Install Lua and LuaRocks
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y lua5.1 liblua5.1-dev luarocks
+
+      - name: Install vusted
+        run: |
+          sudo luarocks install vusted
+
+      - name: Install dependencies
+        run: |
+          # Install nvim-treesitter
+          git clone https://github.com/nvim-treesitter/nvim-treesitter ~/.local/share/nvim/site/pack/packer/start/nvim-treesitter
+
+      - name: Install treesitter parsers
+        run: |
+          nvim --headless -c "TSInstallSync lua javascript typescript python c cpp java go rust" -c "qa"
+
+      - name: Run all tests
+        run: vusted tests/
 
   lint:
     runs-on: ubuntu-latest
-    
+
     steps:
-    - uses: actions/checkout@v3
-    
-    - name: Install stylua
-      run: |
-        curl -L https://github.com/JohnnyMorganz/StyLua/releases/download/v0.18.2/stylua-linux.zip -o stylua.zip
-        unzip stylua.zip
-        chmod +x stylua
-        sudo mv stylua /usr/local/bin/
-    
-    - name: Check code formatting
-      run: |
-        stylua --check lua/ tests/
-        
-    - name: Check for trailing whitespace
-      run: |
-        if grep -r '[[:space:]]$' lua/ tests/ --exclude-dir=.git; then
-          echo "Found trailing whitespace"
-          exit 1
-        fi
+      - uses: actions/checkout@v3
+
+      - name: Install stylua
+        run: |
+          curl -L https://github.com/JohnnyMorganz/StyLua/releases/download/v0.18.2/stylua-linux.zip -o stylua.zip
+          unzip stylua.zip
+          chmod +x stylua
+          sudo mv stylua /usr/local/bin/
+
+      - name: Check code formatting
+        run: |
+          stylua --check lua/ tests/
+
+      - name: Check for trailing whitespace
+        run: |
+          if grep -r '[[:space:]]$' lua/ tests/ --exclude-dir=.git; then
+            echo "Found trailing whitespace"
+            exit 1
+          fi
