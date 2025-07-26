@@ -1,9 +1,11 @@
 local config = require('treesitter-cyclomatic-complexity.config')
+local display = require('treesitter-cyclomatic-complexity.display')
 
 local M = {}
 
 M.setup = function(opts)
   config.setup(opts)
+  display.setup()
   
   if config.get('enabled') then
     M.enable()
@@ -49,7 +51,7 @@ M.update_buffer = function(bufnr)
     return
   end
   
-  M.clear_buffer(bufnr)
+  display.update_display(bufnr)
 end
 
 M.clear_buffer = function(bufnr)
@@ -57,8 +59,7 @@ M.clear_buffer = function(bufnr)
     return
   end
   
-  local ns_id = vim.api.nvim_create_namespace('treesitter-cyclomatic-complexity')
-  vim.api.nvim_buf_clear_namespace(bufnr, ns_id, 0, -1)
+  display.clear_complexity(bufnr)
 end
 
 return M
