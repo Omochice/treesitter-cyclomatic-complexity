@@ -18,19 +18,19 @@ describe("configuration module", function()
     it("has correct default values", function()
       local defaults = config.defaults
       
-      assert.is_true(defaults.enabled)
-      assert.is_true(defaults.auto_update)
-      assert.are.equal("CC: %d", defaults.display.format)
-      assert.are.equal("Comment", defaults.display.highlight)
-      assert.are.equal("eol", defaults.display.position)
-      assert.are.equal(5, defaults.thresholds.low)
-      assert.are.equal(10, defaults.thresholds.medium)
-      assert.are.equal(15, defaults.thresholds.high)
+      helper.assert.is_true(defaults.enabled)
+      helper.assert.is_true(defaults.auto_update)
+      helper.assert.are.equal("CC: %d", defaults.display.format)
+      helper.assert.are.equal("Comment", defaults.display.highlight)
+      helper.assert.are.equal("eol", defaults.display.position)
+      helper.assert.are.equal(5, defaults.thresholds.low)
+      helper.assert.are.equal(10, defaults.thresholds.medium)
+      helper.assert.are.equal(15, defaults.thresholds.high)
       
       -- Check language defaults
-      assert.is_true(defaults.languages.lua)
-      assert.is_true(defaults.languages.javascript)
-      assert.is_true(defaults.languages.python)
+      helper.assert.is_true(defaults.languages.lua)
+      helper.assert.is_true(defaults.languages.javascript)
+      helper.assert.is_true(defaults.languages.python)
     end)
   end)
 
@@ -39,9 +39,9 @@ describe("configuration module", function()
       config.setup()
       
       local options = config.get()
-      assert.is_true(options.enabled)
-      assert.is_true(options.auto_update)
-      assert.are.equal("CC: %d", options.display.format)
+      helper.assert.is_true(options.enabled)
+      helper.assert.is_true(options.auto_update)
+      helper.assert.are.equal("CC: %d", options.display.format)
     end)
 
     it("merges provided options with defaults", function()
@@ -54,11 +54,11 @@ describe("configuration module", function()
       })
       
       local options = config.get()
-      assert.is_false(options.enabled)
-      assert.are.equal(3, options.thresholds.low)
-      assert.are.equal(7, options.thresholds.medium)
-      assert.are.equal(15, options.thresholds.high)  -- Should keep default
-      assert.are.equal("CC: %d", options.display.format)  -- Should keep default
+      helper.assert.is_false(options.enabled)
+      helper.assert.are.equal(3, options.thresholds.low)
+      helper.assert.are.equal(7, options.thresholds.medium)
+      helper.assert.are.equal(15, options.thresholds.high)  -- Should keep default
+      helper.assert.are.equal("CC: %d", options.display.format)  -- Should keep default
     end)
 
     it("merges with vim global variable", function()

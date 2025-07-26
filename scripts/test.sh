@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Test runner script for treesitter-cyclomatic-complexity
+# Test runner script for treesitter-cyclomatic-complexity using vusted
 
 set -e
 
@@ -14,7 +14,6 @@ NC='\033[0m' # No Color
 # Default values
 TEST_TYPE="all"
 VERBOSE=false
-MINIMAL_INIT="tests/minimal_init.lua"
 
 # Help function
 show_help() {
@@ -25,7 +24,6 @@ show_help() {
     echo "  -t, --type TYPE         Test type: all, unit, integration, fixtures (default: all)"
     echo "  -v, --verbose           Enable verbose output"
     echo "  -f, --file FILE         Run specific test file"
-    echo "  --minimal-init FILE     Use custom minimal init file"
     echo ""
     echo "Examples:"
     echo "  $0                      # Run all tests"
@@ -53,10 +51,6 @@ while [[ $# -gt 0 ]]; do
             TEST_FILE="$2"
             shift 2
             ;;
-        --minimal-init)
-            MINIMAL_INIT="$2"
-            shift 2
-            ;;
         *)
             echo "Unknown option: $1"
             show_help
@@ -65,15 +59,16 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-# Check if Neovim is installed
-if ! command -v nvim &> /dev/null; then
-    echo -e "${RED}Error: Neovim is not installed${NC}"
+# Check if vusted is installed
+if ! command -v vusted &> /dev/null; then
+    echo -e "${RED}Error: vusted is not installed${NC}"
+    echo -e "${YELLOW}Install vusted with: luarocks install vusted${NC}"
     exit 1
 fi
 
-# Check if minimal init exists
-if [ ! -f "$MINIMAL_INIT" ]; then
-    echo -e "${RED}Error: Minimal init file not found: $MINIMAL_INIT${NC}"
+# Check if Neovim is installed
+if ! command -v nvim &> /dev/null; then
+    echo -e "${RED}Error: Neovim is not installed${NC}"
     exit 1
 fi
 
@@ -85,11 +80,9 @@ run_test() {
     echo -e "${BLUE}Running $test_name tests...${NC}"
     
     if [ "$VERBOSE" = true ]; then
-        nvim --headless --noplugin -u "$MINIMAL_INIT" \
-            -c "PlenaryBustedDirectory $test_dir { minimal_init = '$MINIMAL_INIT', sequential = true }"
+        vusted --verbose "$test_dir"
     else
-        nvim --headless --noplugin -u "$MINIMAL_INIT" \
-            -c "PlenaryBustedDirectory $test_dir { minimal_init = '$MINIMAL_INIT' }"
+        vusted "$test_dir"
     fi
     
     local exit_code=$?
@@ -112,8 +105,11 @@ run_test_file() {
     
     echo -e "${BLUE}Running test file: $test_file${NC}"
     
-    nvim --headless --noplugin -u "$MINIMAL_INIT" \
-        -c "PlenaryBustedFile $test_file"
+    if [ "$VERBOSE" = true ]; then
+        vusted --verbose "$test_file"
+    else
+        vusted "$test_file"
+    fi
     
     local exit_code=$?
     if [ $exit_code -eq 0 ]; then

@@ -28,11 +28,16 @@ tests/
 ### Prerequisites
 
 1. **Neovim 0.8+**: Required for running tests
-2. **plenary.nvim**: Testing framework dependency
-3. **nvim-treesitter**: Required for parsing functionality
-4. **Treesitter parsers**: Install parsers for tested languages
+2. **Lua 5.1+**: Required for vusted
+3. **LuaRocks**: Package manager for installing vusted
+4. **vusted**: Testing framework for Neovim Lua plugins
+5. **nvim-treesitter**: Required for parsing functionality
+6. **Treesitter parsers**: Install parsers for tested languages
 
 ```bash
+# Install vusted
+luarocks install vusted
+
 # Install treesitter parsers
 nvim -c "TSInstall lua javascript typescript python c cpp java go rust" -c "qa"
 ```
@@ -44,6 +49,9 @@ nvim -c "TSInstall lua javascript typescript python c cpp java go rust" -c "qa"
 ```bash
 # Run all tests
 make test
+
+# Run all tests with vusted directly
+make test-all
 
 # Run specific test suites
 make test-unit           # Unit tests only
@@ -58,6 +66,9 @@ make test-quick
 
 # Verbose output
 make test-verbose
+
+# Install vusted
+make install-vusted
 
 # Show help
 make help
@@ -84,16 +95,27 @@ make help
 ./scripts/test.sh --help
 ```
 
-#### Manual Execution
+#### Using Vusted Directly
 
 ```bash
+# Run all tests
+vusted
+
 # Run specific test directory
-nvim --headless --noplugin -u tests/minimal_init.lua \
-  -c "PlenaryBustedDirectory tests/unit { minimal_init = 'tests/minimal_init.lua' }"
+vusted tests/unit/
+vusted tests/integration/
+vusted tests/fixtures/
 
 # Run specific test file
-nvim --headless --noplugin -u tests/minimal_init.lua \
-  -c "PlenaryBustedFile tests/unit/complexity_spec.lua"
+vusted tests/unit/complexity_spec.lua
+
+# Run with verbose output
+vusted --verbose
+
+# Run with custom output format
+vusted --output=gtest
+vusted --output=tap
+vusted --output=json
 ```
 
 ## Test Categories
@@ -227,15 +249,19 @@ The CI workflow:
 
 ### Common Issues
 
-1. **Treesitter parsers not installed**
+1. **vusted not found**
    ```bash
-   nvim -c "TSInstall lua javascript python c" -c "qa"
+   # Install luarocks if not already installed
+   # Ubuntu/Debian: sudo apt-get install luarocks
+   # macOS: brew install luarocks
+   
+   # Install vusted
+   luarocks install vusted
    ```
 
-2. **plenary.nvim not found**
+2. **Treesitter parsers not installed**
    ```bash
-   # Install plenary.nvim in your plugin manager or manually
-   git clone https://github.com/nvim-lua/plenary.nvim ~/.local/share/nvim/site/pack/packer/start/plenary.nvim
+   nvim -c "TSInstall lua javascript python c" -c "qa"
    ```
 
 3. **Tests timeout**
@@ -251,12 +277,12 @@ The CI workflow:
 Run tests with verbose output for debugging:
 
 ```bash
+# Using test script
 ./scripts/test.sh --verbose
-```
 
-Or manually with detailed output:
+# Using vusted directly
+vusted --verbose
 
-```bash
-nvim --headless --noplugin -u tests/minimal_init.lua \
-  -c "PlenaryBustedDirectory tests { minimal_init = 'tests/minimal_init.lua', sequential = true }"
+# Using make
+make test-verbose
 ```

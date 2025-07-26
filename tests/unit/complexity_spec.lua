@@ -210,14 +210,14 @@ async def async_function():
     it("classifies complexity levels correctly", function()
       local thresholds = { low = 5, medium = 10, high = 15 }
       
-      assert.are.equal('low', complexity.get_complexity_level(1, thresholds))
-      assert.are.equal('low', complexity.get_complexity_level(5, thresholds))
-      assert.are.equal('medium', complexity.get_complexity_level(6, thresholds))
-      assert.are.equal('medium', complexity.get_complexity_level(10, thresholds))
-      assert.are.equal('high', complexity.get_complexity_level(11, thresholds))
-      assert.are.equal('high', complexity.get_complexity_level(15, thresholds))
-      assert.are.equal('very_high', complexity.get_complexity_level(16, thresholds))
-      assert.are.equal('very_high', complexity.get_complexity_level(25, thresholds))
+      helper.assert.are.equal('low', complexity.get_complexity_level(1, thresholds))
+      helper.assert.are.equal('low', complexity.get_complexity_level(5, thresholds))
+      helper.assert.are.equal('medium', complexity.get_complexity_level(6, thresholds))
+      helper.assert.are.equal('medium', complexity.get_complexity_level(10, thresholds))
+      helper.assert.are.equal('high', complexity.get_complexity_level(11, thresholds))
+      helper.assert.are.equal('high', complexity.get_complexity_level(15, thresholds))
+      helper.assert.are.equal('very_high', complexity.get_complexity_level(16, thresholds))
+      helper.assert.are.equal('very_high', complexity.get_complexity_level(25, thresholds))
     end)
   end)
 

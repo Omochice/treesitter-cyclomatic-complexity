@@ -36,16 +36,52 @@ M.wait_for_treesitter = function(bufnr)
   return false
 end
 
--- Assertion helpers
+-- Assertion helpers for vusted
 M.assert_complexity = function(expected, actual, msg)
-  assert(expected == actual, 
-    string.format("%s: expected %d, got %d", msg or "Complexity mismatch", expected, actual))
+  local message = msg or "Complexity mismatch"
+  if expected ~= actual then
+    error(string.format("%s: expected %d, got %d", message, expected, actual))
+  end
 end
 
 M.assert_node_count = function(expected, nodes, msg)
-  assert(expected == #nodes,
-    string.format("%s: expected %d nodes, got %d", msg or "Node count mismatch", expected, #nodes))
+  local message = msg or "Node count mismatch"
+  local actual = #nodes
+  if expected ~= actual then
+    error(string.format("%s: expected %d nodes, got %d", message, expected, actual))
+  end
 end
+
+-- Vusted-compatible assertions
+M.assert = {
+  are = {
+    equal = function(expected, actual, msg)
+      if expected ~= actual then
+        error(msg or string.format("Expected %s, got %s", tostring(expected), tostring(actual)))
+      end
+    end
+  },
+  is_true = function(value, msg)
+    if not value then
+      error(msg or "Expected true, got " .. tostring(value))
+    end
+  end,
+  is_false = function(value, msg)
+    if value then
+      error(msg or "Expected false, got " .. tostring(value))
+    end
+  end,
+  is_nil = function(value, msg)
+    if value ~= nil then
+      error(msg or "Expected nil, got " .. tostring(value))
+    end
+  end,
+  is_not_nil = function(value, msg)
+    if value == nil then
+      error(msg or "Expected non-nil value")
+    end
+  end
+}
 
 -- Mock functions for testing
 M.mock_config = function(config)

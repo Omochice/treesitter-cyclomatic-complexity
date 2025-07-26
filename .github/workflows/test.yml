@@ -21,11 +21,17 @@ jobs:
       with:
         neovim-version: ${{ matrix.neovim_version }}
     
+    - name: Install Lua and LuaRocks
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y lua5.1 liblua5.1-dev luarocks
+    
+    - name: Install vusted
+      run: |
+        sudo luarocks install vusted
+    
     - name: Install dependencies
       run: |
-        # Install plenary.nvim
-        git clone https://github.com/nvim-lua/plenary.nvim ~/.local/share/nvim/site/pack/packer/start/plenary.nvim
-        
         # Install nvim-treesitter
         git clone https://github.com/nvim-treesitter/nvim-treesitter ~/.local/share/nvim/site/pack/packer/start/nvim-treesitter
     
@@ -33,14 +39,8 @@ jobs:
       run: |
         nvim --headless -c "TSInstallSync lua javascript typescript python c cpp java go rust" -c "qa"
     
-    - name: Run unit tests
-      run: make test-unit
-      
-    - name: Run integration tests  
-      run: make test-integration
-      
-    - name: Run fixture tests
-      run: make test-fixtures
+    - name: Run all tests
+      run: vusted tests/
 
   lint:
     runs-on: ubuntu-latest

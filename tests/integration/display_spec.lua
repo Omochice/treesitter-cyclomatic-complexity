@@ -105,7 +105,7 @@ end
       })
       
       local hl_group = display.get_highlight_group(3, config.get('thresholds'))
-      assert.are.equal('CyclomaticComplexityLow', hl_group)
+      helper.assert.are.equal('CyclomaticComplexityLow', hl_group)
     end)
 
     it("uses correct highlight group for medium complexity", function()
@@ -114,7 +114,7 @@ end
       })
       
       local hl_group = display.get_highlight_group(7, config.get('thresholds'))
-      assert.are.equal('CyclomaticComplexityMedium', hl_group)
+      helper.assert.are.equal('CyclomaticComplexityMedium', hl_group)
     end)
 
     it("uses correct highlight group for high complexity", function()
@@ -123,7 +123,7 @@ end
       })
       
       local hl_group = display.get_highlight_group(12, config.get('thresholds'))
-      assert.are.equal('CyclomaticComplexityHigh', hl_group)
+      helper.assert.are.equal('CyclomaticComplexityHigh', hl_group)
     end)
 
     it("uses correct highlight group for very high complexity", function()
@@ -132,24 +132,24 @@ end
       })
       
       local hl_group = display.get_highlight_group(20, config.get('thresholds'))
-      assert.are.equal('CyclomaticComplexityVeryHigh', hl_group)
+      helper.assert.are.equal('CyclomaticComplexityVeryHigh', hl_group)
     end)
   end)
 
   describe("text formatting", function()
     it("formats complexity text with default format", function()
       local text = display.format_complexity_text(5)
-      assert.are.equal("CC: 5", text)
+      helper.assert.are.equal("CC: 5", text)
     end)
 
     it("formats complexity text with custom format", function()
       local text = display.format_complexity_text(7, "Complexity: %d")
-      assert.are.equal("Complexity: 7", text)
+      helper.assert.are.equal("Complexity: 7", text)
     end)
 
     it("handles nil format gracefully", function()
       local text = display.format_complexity_text(3, nil)
-      assert.are.equal("CC: 3", text)
+      helper.assert.are.equal("CC: 3", text)
     end)
   end)
 
@@ -192,12 +192,12 @@ end
       test_bufnr = helper.create_test_buffer("some content", 'unsupported')
       
       local stats = display.get_stats(test_bufnr)
-      assert.is_nil(stats)
+      helper.assert.is_nil(stats)
     end)
 
     it("returns nil for invalid buffer", function()
       local stats = display.get_stats(99999)
-      assert.is_nil(stats)
+      helper.assert.is_nil(stats)
     end)
 
     it("calculates distribution correctly", function()
