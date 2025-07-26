@@ -24,6 +24,20 @@ local control_flow_patterns = {
     'conditional_expression',
     'binary_expression'  -- for && and ||
   },
+  typescript = {
+    'if_statement',
+    'for_statement',
+    'for_in_statement',
+    'for_of_statement',
+    'while_statement',
+    'do_statement',
+    'switch_statement',
+    'case_clause',
+    'try_statement',
+    'catch_clause',
+    'conditional_expression',
+    'binary_expression'  -- for && and ||
+  },
   python = {
     'if_statement',
     'elif_clause',
@@ -34,11 +48,61 @@ local control_flow_patterns = {
     'with_statement',
     'conditional_expression',
     'boolean_operator'  -- for and/or
+  },
+  c = {
+    'if_statement',
+    'for_statement',
+    'while_statement',
+    'do_statement',
+    'switch_statement',
+    'case_statement_label',
+    'conditional_expression'
+  },
+  cpp = {
+    'if_statement',
+    'for_statement',
+    'while_statement',
+    'do_statement',
+    'for_range_loop',
+    'switch_statement',
+    'case_statement_label',
+    'try_statement',
+    'catch_clause',
+    'conditional_expression'
+  },
+  java = {
+    'if_statement',
+    'for_statement',
+    'enhanced_for_statement',
+    'while_statement',
+    'do_statement',
+    'switch_expression',
+    'switch_label',
+    'try_statement',
+    'catch_clause',
+    'ternary_expression'
+  },
+  go = {
+    'if_statement',
+    'for_statement',
+    'switch_statement',
+    'type_switch_statement',
+    'select_statement',
+    'expression_case',
+    'type_case'
+  },
+  rust = {
+    'if_expression',
+    'match_expression',
+    'match_arm',
+    'loop_expression',
+    'for_expression',
+    'while_expression'
   }
 }
 
 local function is_logical_operator(node, lang)
-  if lang == 'javascript' then
+  if lang == 'javascript' or lang == 'typescript' then
     if node:type() == 'binary_expression' then
       local operator = node:child(1)
       if operator then
@@ -49,6 +113,22 @@ local function is_logical_operator(node, lang)
   elseif lang == 'python' then
     if node:type() == 'boolean_operator' then
       return true
+    end
+  elseif lang == 'c' or lang == 'cpp' then
+    if node:type() == 'binary_expression' then
+      local operator = node:child(1)
+      if operator then
+        local op_text = vim.treesitter.get_node_text(operator, 0)
+        return op_text == '&&' or op_text == '||'
+      end
+    end
+  elseif lang == 'java' then
+    if node:type() == 'binary_expression' then
+      local operator = node:child(1)
+      if operator then
+        local op_text = vim.treesitter.get_node_text(operator, 0)
+        return op_text == '&&' or op_text == '||'
+      end
     end
   end
   return false
