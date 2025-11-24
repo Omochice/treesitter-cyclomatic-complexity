@@ -293,4 +293,98 @@ M.get_node_range = function(node)
   }
 end
 
+-- Convert treesitter node to structured data for pure calculation functions
+-- @param node userdata Treesitter node
+-- @param bufnr number Buffer number
+-- @return table { type: string, children: table[], operator?: string }
+M.node_to_data = function(node, bufnr)
+  if not node then
+    return nil
+  end
+
+  local node_type = node:type()
+  local result = {
+    type = node_type,
+    children = {}
+  }
+
+  -- Extract operator for binary expressions
+  if node_type == "binary_expression" or node_type == "boolean_operator" then
+    -- Find operator child
+    for i = 0, node:child_count() - 1 do
+      local child = node:child(i)
+      if child then
+        local child_type = child:type()
+        -- Common operator types in treesitter
+        if child_type:match("^[%+%-%*%/%%&|<>=!]+$") or
+           child_type == "and" or child_type == "or" then
+          result.operator = vim.treesitter.get_node_text(child, bufnr)
+          break
+        end
+      end
+    end
+  end
+
+  -- Recursively convert children
+  for i = 0, node:child_count() - 1 do
+    local child = node:child(i)
+    if child then
+      local child_data = M.node_to_data(child, bufnr)
+      if child_data then
+        table.insert(result.children, child_data)
+      end
+    end
+  end
+
+  return result
+end
+
+-- Get function nodes with structured data for calculation
+-- @param bufnr number
+-- @param lang string
+-- @return table[] Array of { node_data: table, start_row: number, type: string }
+M.get_function_nodes_with_data = function(bufnr, lang)
+  local nodes = M.get_function_nodes(bufnr, lang)
+  local results = {}
+
+  for _, node_info in ipairs(nodes) do
+    local node_data = M.node_to_data(node_info.node, bufnr)
+    table.insert(results, {
+      node = node_info.node,  -- Keep original for backward compatibility
+      node_data = node_data,
+      start_row = node_info.start_row,
+      start_col = node_info.start_col,
+      end_row = node_info.end_row,
+      end_col = node_info.end_col,
+      type = "function"
+    })
+  end
+
+  return results
+end
+
+-- Get loop nodes with structured data for calculation
+-- @param bufnr number
+-- @param lang string
+-- @return table[] Array of { node_data: table, start_row: number, type: string }
+M.get_loop_nodes_with_data = function(bufnr, lang)
+  local nodes = M.get_loop_nodes(bufnr, lang)
+  local results = {}
+
+  for _, node_info in ipairs(nodes) do
+    local node_data = M.node_to_data(node_info.node, bufnr)
+    table.insert(results, {
+      node = node_info.node,  -- Keep original for backward compatibility
+      node_data = node_data,
+      start_row = node_info.start_row,
+      start_col = node_info.start_col,
+      end_row = node_info.end_row,
+      end_col = node_info.end_col,
+      type = "loop"
+    })
+  end
+
+  return results
+end
+
 return M
