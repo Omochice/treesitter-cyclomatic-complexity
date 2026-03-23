@@ -47,7 +47,7 @@ jobs:
         uses: ./.github/actions/setup-nix
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-      - run: nix run .#check-actions
+      - run: nix build ".#checks.$(nix eval --impure --expr builtins.currentSystem).actions"
   check-format:
     timeout-minutes: 5
     needs: path-filter
