@@ -90,32 +90,70 @@
             ghalint
             zizmor
           ];
+          nvfetcher = [
+            pkgs.nvfetcher
+          ];
           # keep-sorted end
           default = [
             treefmt.config.build.wrapper
           ]
-          ++ actions;
+          ++ actions
+          ++ nvfetcher;
         };
+        sources = pkgs.callPackage ./_sources/generated.nix { };
         neovim = pkgs.neovim-unwrapped;
         treesitter = pkgs.vimPlugins.nvim-treesitter.withAllGrammars;
         mini = pkgs.vimPlugins.mini-nvim;
-        initLua = pkgs.writeText "init.lua" ''
-          vim.opt.runtimepath:prepend("${treesitter}")
-          vim.opt.runtimepath:prepend("${mini}")
-          vim.opt.runtimepath:prepend(".")
-        '';
+        luacov = pkgs.lua51Packages.luacov;
+        luacov-reporter-lcov = sources.luacov-reporter-lcov.src;
+        mkInitVim =
+          extraConfig:
+          pkgs.writeTextFile {
+            name = "init-vim";
+            destination = "/init.vim";
+            text = ''
+              set runtimepath+=.
+              set runtimepath+=${treesitter}
+              set runtimepath+=${mini}
+              ${extraConfig}
+            '';
+          };
+        initVim = mkInitVim "";
+        initVimWithCoverage =
+          let
+            luacovPath = "${luacov}/share/lua/5.1";
+            datafilePath = "${pkgs.lua51Packages.datafile}/share/lua/5.1";
+            lcovReporterPath = "${luacov-reporter-lcov}";
+          in
+          mkInitVim ''
+            lua package.path = '${luacovPath}/?.lua;${luacovPath}/?/init.lua;${datafilePath}/?.lua;${datafilePath}/?/init.lua;${lcovReporterPath}/?.lua;${lcovReporterPath}/?/init.lua;' .. package.path
+            lua require("luacov")
+          '';
         testScript = pkgs.writeShellScriptBin "test" ''
           cd "$(${pkgs.lib.getExe pkgs.git} rev-parse --show-toplevel)"
-          ${neovim}/bin/nvim --headless --clean -u ${initLua} -l test/run.lua
+          ${neovim}/bin/nvim --headless --clean -u ${initVim}/init.vim -l test/run.lua
+        '';
+        coverageScript = pkgs.writeShellScriptBin "coverage" ''
+          cd "$(${pkgs.lib.getExe pkgs.git} rev-parse --show-toplevel)"
+          ${neovim}/bin/nvim --headless --clean -u ${initVimWithCoverage}/init.vim -l test/run.lua
+          export LUA_PATH="${luacov-reporter-lcov}/?.lua;${luacov-reporter-lcov}/?/init.lua;;"
+          ${luacov}/bin/luacov -r lcov
+          ${pkgs.gnused}/bin/sed -i "s|SF:$PWD/|SF:|g" luacov.report.out
         '';
       in
       {
         # keep-sorted start block=yes
         apps = {
+          # keep-sorted start block=yes
+          coverage = {
+            type = "app";
+            program = "${coverageScript}/bin/coverage";
+          };
           test = {
             type = "app";
             program = "${testScript}/bin/test";
           };
+          # keep-sorted end
         };
         checks = {
           # keep-sorted start

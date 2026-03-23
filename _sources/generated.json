@@ -1,0 +1,23 @@
+{
+    "luacov-reporter-lcov": {
+        "cargoLock": null,
+        "date": "2019-11-01",
+        "extract": null,
+        "name": "luacov-reporter-lcov",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "owner": "daurnimator",
+            "repo": "luacov-reporter-lcov",
+            "rev": "4d881ddb4eeec5ac0cd7d4b7679e3e59f9ac5745",
+            "sha256": "sha256-o+9E+pMVpWpd4M0gBnU0g9OA7UZjNbuqFa6WG2j73nE=",
+            "sparseCheckout": [],
+            "type": "github"
+        },
+        "version": "4d881ddb4eeec5ac0cd7d4b7679e3e59f9ac5745"
+    }
+}
