@@ -1,0 +1,17 @@
+{
+  "includeCoAuthoredBy": true,
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "nix fmt",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -91,17 +91,17 @@ require('treesitter-cyclomatic-complexity').setup({
 
 ### Configuration Options
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `enabled` | boolean | `true` | Enable/disable the plugin |
-| `auto_update` | boolean | `true` | Auto-update on text changes |
-| `display.format` | string | `"CC: %d"` | Display format string |
-| `display.highlight` | string | `"Comment"` | Highlight group for low complexity |
-| `display.position` | string | `"eol"` | Position of virtual text |
-| `thresholds.low` | number | `5` | Low complexity threshold |
-| `thresholds.medium` | number | `10` | Medium complexity threshold |
-| `thresholds.high` | number | `15` | High complexity threshold |
-| `languages.*` | boolean | `true` | Enable/disable specific languages |
+| Option              | Type    | Default     | Description                        |
+| ------------------- | ------- | ----------- | ---------------------------------- |
+| `enabled`           | boolean | `true`      | Enable/disable the plugin          |
+| `auto_update`       | boolean | `true`      | Auto-update on text changes        |
+| `display.format`    | string  | `"CC: %d"`  | Display format string              |
+| `display.highlight` | string  | `"Comment"` | Highlight group for low complexity |
+| `display.position`  | string  | `"eol"`     | Position of virtual text           |
+| `thresholds.low`    | number  | `5`         | Low complexity threshold           |
+| `thresholds.medium` | number  | `10`        | Medium complexity threshold        |
+| `thresholds.high`   | number  | `15`        | High complexity threshold          |
+| `languages.*`       | boolean | `true`      | Enable/disable specific languages  |
 
 ### Vim Configuration
 
@@ -120,14 +120,14 @@ let g:treesitter_cyclomatic_complexity = {
 
 ## Commands
 
-| Command | Description |
-|---------|-------------|
-| `:CyclomaticComplexityEnable` | Enable complexity display |
-| `:CyclomaticComplexityDisable` | Disable complexity display |
-| `:CyclomaticComplexityToggle` | Toggle complexity display |
-| `:CyclomaticComplexityUpdate` | Update current buffer |
-| `:CyclomaticComplexityClear` | Clear current buffer display |
-| `:CyclomaticComplexityRefresh` | Refresh all buffers |
+| Command                        | Description                  |
+| ------------------------------ | ---------------------------- |
+| `:CyclomaticComplexityEnable`  | Enable complexity display    |
+| `:CyclomaticComplexityDisable` | Disable complexity display   |
+| `:CyclomaticComplexityToggle`  | Toggle complexity display    |
+| `:CyclomaticComplexityUpdate`  | Update current buffer        |
+| `:CyclomaticComplexityClear`   | Clear current buffer display |
+| `:CyclomaticComplexityRefresh` | Refresh all buffers          |
 
 ## API
 
@@ -175,17 +175,17 @@ print(vim.inspect(stats))
 
 ## Supported Languages
 
-| Language | Functions | Loops | Control Flow |
-|----------|-----------|-------|--------------|
-| Lua | ✅ | ✅ | if, for, while, repeat |
-| JavaScript | ✅ | ✅ | if, for, while, switch, try |
-| TypeScript | ✅ | ✅ | if, for, while, switch, try |
-| Python | ✅ | ✅ | if, for, while, try, with |
-| C | ✅ | ✅ | if, for, while, switch |
-| C++ | ✅ | ✅ | if, for, while, switch, try |
-| Java | ✅ | ✅ | if, for, while, switch, try |
-| Go | ✅ | ✅ | if, for, switch, select |
-| Rust | ✅ | ✅ | if, match, loop, for, while |
+| Language   | Functions | Loops | Control Flow                |
+| ---------- | --------- | ----- | --------------------------- |
+| Lua        | ✅        | ✅    | if, for, while, repeat      |
+| JavaScript | ✅        | ✅    | if, for, while, switch, try |
+| TypeScript | ✅        | ✅    | if, for, while, switch, try |
+| Python     | ✅        | ✅    | if, for, while, try, with   |
+| C          | ✅        | ✅    | if, for, while, switch      |
+| C++        | ✅        | ✅    | if, for, while, switch, try |
+| Java       | ✅        | ✅    | if, for, while, switch, try |
+| Go         | ✅        | ✅    | if, for, switch, select     |
+| Rust       | ✅        | ✅    | if, match, loop, for, while |
 
 ## How Cyclomatic Complexity is Calculated
 
@@ -194,6 +194,7 @@ Cyclomatic complexity is calculated using the standard formula:
 **CC = Number of decision points + 1**
 
 Decision points include:
+
 - `if/else` statements
 - Loop constructs (`for`, `while`, etc.)
 - `switch/case` statements
@@ -214,7 +215,7 @@ function moderate(items)
   if #items == 0 then
     return nil
   end
-  
+
   for i, item in ipairs(items) do
     print(item)
   end
@@ -255,17 +256,17 @@ The plugin uses color-coded highlighting based on complexity thresholds:
 ### Common Issues
 
 1. **No complexity shown**
-   - Ensure nvim-treesitter is installed and configured
-   - Check if language parser is available: `:TSInstall <language>`
-   - Verify language is enabled in configuration
+    - Ensure nvim-treesitter is installed and configured
+    - Check if language parser is available: `:TSInstall <language>`
+    - Verify language is enabled in configuration
 
 2. **Performance issues**
-   - Disable `auto_update` for large files
-   - Reduce update frequency by modifying debounce delay
+    - Disable `auto_update` for large files
+    - Reduce update frequency by modifying debounce delay
 
 3. **Incorrect complexity values**
-   - Different languages have different AST structures
-   - Report issues with code examples for language-specific problems
+    - Different languages have different AST structures
+    - Report issues with code examples for language-specific problems
 
 ### Debug Information
 
