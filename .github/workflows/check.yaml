@@ -28,7 +28,7 @@ jobs:
               - flake.nix
               - flake.lock
             renovate:
-              - renovate.json
+              - renovate.json5
               - flake.nix
               - flake.lock
   check-actions:
