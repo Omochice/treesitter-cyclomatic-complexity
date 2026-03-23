@@ -17,7 +17,8 @@ This plan follows TDD methodology with red-green-refactor cycles. Each cycle pro
 
 **Goal:** Set up testing framework and helpers
 
-#### Steps:
+#### Steps
+
 1. Create `tests/` directory structure
 2. Create `tests/minimal_init.lua` for Neovim tests
 3. Create `tests/spec/helpers.lua` with test utilities
@@ -34,6 +35,7 @@ This plan follows TDD methodology with red-green-refactor cycles. Each cycle pro
 #### TDD Cycle 2.1: get_level function
 
 **Red:**
+
 ```lua
 -- tests/spec/complexity/levels_spec.lua
 describe("levels", function()
@@ -64,13 +66,16 @@ describe("levels", function()
   end)
 end)
 ```
+
 **Commit:** `test: add levels.get_level tests`
 
 **Green:**
+
 - Implement `complexity/levels.lua` with `get_level` function
 - **Commit:** `feat: implement complexity level determination`
 
 **Refactor:**
+
 - Clean up code if needed
 - **Commit:** `refactor: improve levels module` (if applicable)
 
@@ -83,6 +88,7 @@ end)
 #### TDD Cycle 3.1: get_patterns function
 
 **Red:**
+
 ```lua
 -- tests/spec/complexity/counter_spec.lua
 describe("counter", function()
@@ -101,15 +107,18 @@ describe("counter", function()
   end)
 end)
 ```
+
 **Commit:** `test: add counter.get_patterns tests`
 
 **Green:**
+
 - Implement pattern definitions
 - **Commit:** `feat: implement control flow patterns`
 
 #### TDD Cycle 3.2: is_decision_point function
 
 **Red:**
+
 ```lua
 describe("is_decision_point", function()
   it("returns true for if_statement in lua", function()
@@ -126,15 +135,18 @@ describe("is_decision_point", function()
   end)
 end)
 ```
+
 **Commit:** `test: add counter.is_decision_point tests`
 
 **Green:**
+
 - Implement `is_decision_point`
 - **Commit:** `feat: implement decision point detection`
 
 #### TDD Cycle 3.3: is_logical_operator function
 
 **Red:**
+
 ```lua
 describe("is_logical_operator", function()
   it("returns true for && in javascript", function()
@@ -154,9 +166,11 @@ describe("is_logical_operator", function()
   end)
 end)
 ```
+
 **Commit:** `test: add counter.is_logical_operator tests`
 
 **Green:**
+
 - Implement `is_logical_operator`
 - **Commit:** `feat: implement logical operator detection`
 
@@ -169,6 +183,7 @@ end)
 #### TDD Cycle 4.1: count_complexity for empty function
 
 **Red:**
+
 ```lua
 describe("count_complexity", function()
   it("returns 0 for empty node_data", function()
@@ -177,15 +192,18 @@ describe("count_complexity", function()
   end)
 end)
 ```
+
 **Commit:** `test: add count_complexity empty function test`
 
 **Green:**
+
 - Implement base case
 - **Commit:** `feat: implement base complexity counting`
 
 #### TDD Cycle 4.2: count_complexity for single decision point
 
 **Red:**
+
 ```lua
 it("returns 1 for single if statement", function()
   local node_data = {
@@ -207,15 +225,18 @@ it("returns 1 for single for loop", function()
   assert.equals(1, counter.count_complexity(node_data, "lua"))
 end)
 ```
+
 **Commit:** `test: add count_complexity single decision tests`
 
 **Green:**
+
 - Implement single decision point counting
 - **Commit:** `feat: implement single decision point counting`
 
 #### TDD Cycle 4.3: count_complexity for nested structures
 
 **Red:**
+
 ```lua
 it("counts nested structures correctly", function()
   local node_data = {
@@ -244,15 +265,18 @@ it("counts multiple siblings correctly", function()
   assert.equals(3, counter.count_complexity(node_data, "lua"))
 end)
 ```
+
 **Commit:** `test: add count_complexity nested/sibling tests`
 
 **Green:**
+
 - Implement recursive traversal
 - **Commit:** `feat: implement nested complexity counting`
 
 #### TDD Cycle 4.4: count_complexity for logical operators
 
 **Red:**
+
 ```lua
 it("counts logical operators in javascript", function()
   local node_data = {
@@ -269,13 +293,16 @@ it("counts logical operators in javascript", function()
   assert.equals(2, counter.count_complexity(node_data, "javascript"))
 end)
 ```
+
 **Commit:** `test: add count_complexity logical operator tests`
 
 **Green:**
+
 - Implement logical operator counting
 - **Commit:** `feat: implement logical operator counting`
 
 **Refactor:**
+
 - Consolidate traversal logic
 - **Commit:** `refactor: improve counter traversal`
 
@@ -288,6 +315,7 @@ end)
 #### TDD Cycle 5.1: calculate_function_complexity
 
 **Red:**
+
 ```lua
 -- tests/spec/complexity_spec.lua
 describe("complexity", function()
@@ -310,15 +338,18 @@ describe("complexity", function()
   end)
 end)
 ```
+
 **Commit:** `test: add calculate_function_complexity tests`
 
 **Green:**
+
 - Implement facade combining counter + base complexity
 - **Commit:** `feat: implement function complexity calculation`
 
 #### TDD Cycle 5.2: calculate_loop_complexity
 
 **Red:**
+
 ```lua
 describe("calculate_loop_complexity", function()
   it("returns 1 for simple loop", function()
@@ -337,9 +368,11 @@ describe("calculate_loop_complexity", function()
   end)
 end)
 ```
+
 **Commit:** `test: add calculate_loop_complexity tests`
 
 **Green:**
+
 - Implement loop complexity calculation
 - **Commit:** `feat: implement loop complexity calculation`
 
@@ -352,6 +385,7 @@ end)
 #### TDD Cycle 6.1: JavaScript/TypeScript patterns
 
 **Red:**
+
 ```lua
 describe("javascript patterns", function()
   it("counts switch cases", function()
@@ -380,15 +414,18 @@ describe("javascript patterns", function()
   end)
 end)
 ```
+
 **Commit:** `test: add JavaScript pattern tests`
 
 **Green:**
+
 - Verify/fix JavaScript patterns
 - **Commit:** `fix: correct JavaScript complexity calculation` (if fixes needed)
 
 #### TDD Cycle 6.2: Python patterns
 
 **Red:**
+
 ```lua
 describe("python patterns", function()
   it("counts elif clauses", function()
@@ -416,9 +453,11 @@ describe("python patterns", function()
   end)
 end)
 ```
+
 **Commit:** `test: add Python pattern tests`
 
 **Green:**
+
 - Verify/fix Python patterns
 - **Commit:** `fix: correct Python complexity calculation` (if fixes needed)
 
@@ -432,13 +471,15 @@ Similar pattern for each language.
 
 **Goal:** Update parser to provide node_data structure
 
-#### Steps:
+#### Steps
+
 1. Add `node_to_data` function to parser.lua
 2. Update `get_function_nodes` to return node_data
 3. Update `get_loop_nodes` to return node_data
 4. Integration tests with actual Neovim
 
 **Commits:**
+
 - `feat: add node_to_data conversion to parser`
 - `refactor: update parser to return structured data`
 
@@ -448,13 +489,15 @@ Similar pattern for each language.
 
 **Goal:** Connect new calculation modules to existing code
 
-#### Steps:
+#### Steps
+
 1. Update `complexity.lua` to use new modules
 2. Update `display.lua` to use new calculation interface
 3. Ensure backward compatibility
 4. End-to-end testing
 
 **Commits:**
+
 - `refactor: integrate new calculation modules`
 - `test: add integration tests`
 
@@ -464,13 +507,15 @@ Similar pattern for each language.
 
 **Goal:** Final cleanup and documentation
 
-#### Steps:
+#### Steps
+
 1. Remove any deprecated code
 2. Update inline documentation
 3. Verify all tests pass
 4. Final refactoring
 
 **Commits:**
+
 - `refactor: cleanup deprecated code`
 - `docs: update code documentation`
 
@@ -478,17 +523,17 @@ Similar pattern for each language.
 
 ## Commit Summary
 
-| Task | Red Commits | Green Commits | Refactor Commits |
-|------|-------------|---------------|------------------|
-| 1. Setup | - | 1 | - |
-| 2. Levels | 1 | 1 | 0-1 |
-| 3. Counter Basic | 3 | 3 | 0-1 |
-| 4. Counter Calc | 4 | 4 | 1 |
-| 5. Facade | 2 | 2 | 0-1 |
-| 6. Languages | 5+ | 0-5 | - |
-| 7. Parser | - | 2 | - |
-| 8. Wire Up | - | 1 | 1 |
-| 9. Cleanup | - | - | 2 |
+| Task             | Red Commits | Green Commits | Refactor Commits |
+| ---------------- | ----------- | ------------- | ---------------- |
+| 1. Setup         | -           | 1             | -                |
+| 2. Levels        | 1           | 1             | 0-1              |
+| 3. Counter Basic | 3           | 3             | 0-1              |
+| 4. Counter Calc  | 4           | 4             | 1                |
+| 5. Facade        | 2           | 2             | 0-1              |
+| 6. Languages     | 5+          | 0-5           | -                |
+| 7. Parser        | -           | 2             | -                |
+| 8. Wire Up       | -           | 1             | 1                |
+| 9. Cleanup       | -           | -             | 2                |
 
 **Total: ~25-35 commits**
 
