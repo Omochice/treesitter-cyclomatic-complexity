@@ -4,7 +4,6 @@ local queries = {
 	lua = {
 		functions = [[
       (function_declaration name: (identifier) @name) @function
-      (local_function name: (identifier) @name) @function
       (function_definition) @function
     ]],
 		loops = [[
