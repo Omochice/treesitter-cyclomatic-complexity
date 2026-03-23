@@ -90,11 +90,15 @@
             ghalint
             zizmor
           ];
+          nvfetcher = [
+            pkgs.nvfetcher
+          ];
           # keep-sorted end
           default = [
             treefmt.config.build.wrapper
           ]
-          ++ actions;
+          ++ actions
+          ++ nvfetcher;
         };
         neovim = pkgs.neovim-unwrapped;
         treesitter = pkgs.vimPlugins.nvim-treesitter.withAllGrammars;
