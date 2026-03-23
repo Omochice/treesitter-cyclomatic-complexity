@@ -2,7 +2,7 @@
 
 ## Architecture Overview
 
-```
+```text
 ┌─────────────────────────────────────────────────────────┐
 │                    User Interface                        │
 │  (Commands, Autocmds, Virtual Text)                     │
@@ -189,7 +189,7 @@ return M
 
 ### Complexity Calculation Flow
 
-```
+```text
 1. display.update_display(bufnr)
    │
 2. parser.get_function_nodes(bufnr, lang)
@@ -234,7 +234,7 @@ node_data = {
 
 ### Directory Layout
 
-```
+```text
 tests/
 ├── spec/
 │   ├── complexity/
@@ -325,11 +325,11 @@ end)
 
 ## File Changes Summary
 
-| File | Action | Description |
-|------|--------|-------------|
-| `complexity/counter.lua` | Create | Pure counting logic |
-| `complexity/levels.lua` | Create | Pure level logic |
-| `complexity/init.lua` | Create | Calculation facade |
-| `complexity.lua` | Modify | Delegate to new modules |
-| `parser.lua` | Modify | Add node_to_data |
-| `tests/spec/*.lua` | Create | Unit tests |
+| File                     | Action | Description             |
+| ------------------------ | ------ | ----------------------- |
+| `complexity/counter.lua` | Create | Pure counting logic     |
+| `complexity/levels.lua`  | Create | Pure level logic        |
+| `complexity/init.lua`    | Create | Calculation facade      |
+| `complexity.lua`         | Modify | Delegate to new modules |
+| `parser.lua`             | Modify | Add node_to_data        |
+| `tests/spec/*.lua`       | Create | Unit tests              |
