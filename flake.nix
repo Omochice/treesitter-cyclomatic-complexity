@@ -1,5 +1,5 @@
 {
-  description = "sample description";
+  description = "nvim plugin shows cyclomatic complexity by tree-sitter";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixpkgs-unstable";
