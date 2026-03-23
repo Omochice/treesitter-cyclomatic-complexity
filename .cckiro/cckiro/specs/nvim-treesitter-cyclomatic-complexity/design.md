@@ -4,7 +4,7 @@
 
 The plugin follows a modular architecture with clear separation of concerns:
 
-```
+```text
 treesitter-cyclomatic-complexity/
 ├── lua/
 │   └── treesitter-cyclomatic-complexity/
@@ -21,16 +21,20 @@ treesitter-cyclomatic-complexity/
 ## Module Design
 
 ### 1. init.lua (Main Entry Point)
+
 **Purpose**: Plugin initialization and coordination
 **Key Functions**:
+
 - `setup(opts)`: Initialize plugin with user configuration
 - `enable()`: Enable complexity display
 - `disable()`: Disable complexity display
 - `toggle()`: Toggle complexity display
 
 ### 2. config.lua (Configuration Management)
+
 **Purpose**: Handle user configuration and defaults
 **Configuration Options**:
+
 ```lua
 {
   enabled = true,
@@ -52,53 +56,64 @@ treesitter-cyclomatic-complexity/
 ```
 
 ### 3. parser.lua (Treesitter Node Extraction)
+
 **Purpose**: Extract function and loop nodes using treesitter
 **Key Functions**:
+
 - `get_function_nodes(bufnr, lang)`: Extract all function definition nodes
 - `get_loop_nodes(bufnr, lang)`: Extract all loop nodes (for, while)
 - `get_node_range(node)`: Get line/column range for a node
 - `is_supported_language(lang)`: Check if language is supported
 
 **Language Support Strategy**:
+
 - Use treesitter query patterns for each language
 - Maintain language-specific query files for function/loop detection
 - Fallback to generic patterns when possible
 
 ### 4. complexity.lua (Complexity Calculation)
+
 **Purpose**: Calculate cyclomatic complexity for code constructs
 **Key Functions**:
+
 - `calculate_function_complexity(node, source)`: Calculate complexity for a function
 - `calculate_loop_complexity(node, source)`: Calculate complexity for a loop
 - `count_control_flow_nodes(node)`: Count decision points in AST subtree
 
 **Complexity Calculation Algorithm**:
+
 1. Start with base complexity of 1
 2. Traverse AST nodes within the function/loop scope
 3. Increment complexity for each control flow construct:
-   - if/else statements (+1 per condition)
-   - for/while loops (+1 each)
-   - switch cases (+1 per case)
-   - try/catch blocks (+1 per catch)
-   - ternary operators (+1 each)
-   - logical operators (&&, ||) (+1 each)
+    - if/else statements (+1 per condition)
+    - for/while loops (+1 each)
+    - switch cases (+1 per case)
+    - try/catch blocks (+1 per catch)
+    - ternary operators (+1 each)
+    - logical operators (&&, ||) (+1 each)
 
 ### 5. display.lua (Virtual Text Display)
+
 **Purpose**: Handle virtual text rendering and updates
 **Key Functions**:
+
 - `show_complexity(bufnr, line, complexity, opts)`: Display complexity value
 - `clear_complexity(bufnr)`: Clear all complexity displays
 - `update_display(bufnr)`: Refresh complexity display for buffer
 - `get_highlight_group(complexity, thresholds)`: Determine highlight color
 
 **Display Strategy**:
+
 - Use `vim.api.nvim_buf_set_extmark()` for virtual text
 - Create namespace for plugin extmarks
 - Color-code based on complexity thresholds (green/yellow/red)
 - Position text at end of function/loop definition line
 
 ### 6. utils.lua (Utility Functions)
+
 **Purpose**: Common utility functions
 **Key Functions**:
+
 - `get_buffer_language(bufnr)`: Detect buffer language via treesitter
 - `debounce(func, delay)`: Debounce function calls for performance
 - `log(level, message)`: Plugin logging

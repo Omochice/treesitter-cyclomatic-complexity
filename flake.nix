@@ -96,9 +96,27 @@
           ]
           ++ actions;
         };
+        neovim = pkgs.neovim-unwrapped;
+        treesitter = pkgs.vimPlugins.nvim-treesitter.withAllGrammars;
+        mini = pkgs.vimPlugins.mini-nvim;
+        initLua = pkgs.writeText "init.lua" ''
+          vim.opt.runtimepath:prepend("${treesitter}")
+          vim.opt.runtimepath:prepend("${mini}")
+          vim.opt.runtimepath:prepend(".")
+        '';
+        testScript = pkgs.writeShellScriptBin "test" ''
+          cd "$(${pkgs.lib.getExe pkgs.git} rev-parse --show-toplevel)"
+          ${neovim}/bin/nvim --headless --clean -u ${initLua} -l test/run.lua
+        '';
       in
       {
         # keep-sorted start block=yes
+        apps = {
+          test = {
+            type = "app";
+            program = "${testScript}/bin/test";
+          };
+        };
         checks = {
           # keep-sorted start
           actions =

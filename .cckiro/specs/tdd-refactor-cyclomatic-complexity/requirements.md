@@ -11,12 +11,12 @@ Refactor and enhance the existing nvim-treesitter cyclomatic complexity plugin u
 - **FR-1.1**: Calculate cyclomatic complexity for functions in supported languages (Lua, JavaScript, TypeScript, Python, C, C++, Java, Go, Rust)
 - **FR-1.2**: Calculate cyclomatic complexity for loop constructs
 - **FR-1.3**: Count decision points correctly:
-  - if/else statements
-  - for/while/do loops
-  - switch/case statements
-  - try/catch blocks
-  - ternary/conditional operators
-  - Logical operators (&&, ||, and, or)
+    - if/else statements
+    - for/while/do loops
+    - switch/case statements
+    - try/catch blocks
+    - ternary/conditional operators
+    - Logical operators (&&, ||, and, or)
 - **FR-1.4**: Base complexity starts at 1 for each function/loop
 - **FR-1.5**: Support nested control flow structures
 
@@ -24,10 +24,10 @@ Refactor and enhance the existing nvim-treesitter cyclomatic complexity plugin u
 
 - **FR-2.1**: Display complexity values as virtual text at end of line
 - **FR-2.2**: Color-code complexity levels:
-  - Low (<=5): Green
-  - Medium (6-10): Yellow
-  - High (11-15): Red
-  - Very High (>15): Dark Red, Bold
+    - Low (<=5): Green
+    - Medium (6-10): Yellow
+    - High (11-15): Red
+    - Very High (>15): Dark Red, Bold
 - **FR-2.3**: Support customizable display format (e.g., "CC: %d")
 - **FR-2.4**: Support configurable thresholds
 - **FR-2.5**: Auto-update on text changes with debounce
@@ -72,42 +72,42 @@ Refactor and enhance the existing nvim-treesitter cyclomatic complexity plugin u
 
 - **NFR-4.1**: Follow TDD red-green-refactor cycle
 - **NFR-4.2**: Commit at each TDD stage:
-  - Red: Test fails (test: prefix)
-  - Green: Test passes (feat/fix: prefix based on user impact)
-  - Refactor: Code improved (refactor: prefix)
+    - Red: Test fails (test: prefix)
+    - Green: Test passes (feat/fix: prefix based on user impact)
+    - Refactor: Code improved (refactor: prefix)
 - **NFR-4.3**: Use conventional-commit types based on user impact:
-  - `feat`: New user-visible functionality
-  - `fix`: Bug fixes affecting users
-  - `test`: Test additions/changes
-  - `refactor`: Code changes without user impact
-  - `docs`: Documentation changes
-  - `chore`: Maintenance tasks
+    - `feat`: New user-visible functionality
+    - `fix`: Bug fixes affecting users
+    - `test`: Test additions/changes
+    - `refactor`: Code changes without user impact
+    - `docs`: Documentation changes
+    - `chore`: Maintenance tasks
 
 ## Test Strategy
 
 ### Unit Tests (Calculation Logic)
 
 1. **Basic complexity calculation**
-   - Empty function returns 1
-   - Function with single if returns 2
-   - Function with if-else returns 2
-   - Function with multiple ifs returns correct count
+    - Empty function returns 1
+    - Function with single if returns 2
+    - Function with if-else returns 2
+    - Function with multiple ifs returns correct count
 
 2. **Loop complexity**
-   - For loop returns correct complexity
-   - While loop returns correct complexity
-   - Nested loops accumulate correctly
+    - For loop returns correct complexity
+    - While loop returns correct complexity
+    - Nested loops accumulate correctly
 
 3. **Control flow patterns per language**
-   - Test each language's specific patterns
-   - Test logical operators (&&, ||)
-   - Test ternary operators
+    - Test each language's specific patterns
+    - Test logical operators (&&, ||)
+    - Test ternary operators
 
 4. **Complexity level determination**
-   - Low threshold correct
-   - Medium threshold correct
-   - High threshold correct
-   - Very high threshold correct
+    - Low threshold correct
+    - Medium threshold correct
+    - High threshold correct
+    - Very high threshold correct
 
 ### Integration Tests (Display Logic)
 
