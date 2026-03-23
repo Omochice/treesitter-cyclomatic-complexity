@@ -82,7 +82,7 @@ jobs:
             experimental-features = nix-command flakes pipe-operators
             access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
       - name: Validate renovate config
-        run: nix run .#check-renovate-config
+        run: nix build ".#checks.$(nix eval --impure --expr builtins.currentSystem).renovate"
   test:
     timeout-minutes: 30
     needs: path-filter
