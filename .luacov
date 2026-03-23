@@ -1,0 +1,8 @@
+return {
+  include = {
+    "lua/treesitter%-cyclomatic%-complexity/.+",
+  },
+  exclude = {
+    "test/.+",
+  },
+}
