@@ -12,6 +12,18 @@
       url = "github:Omochice/nur-packages";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    mini-test = {
+      url = "github:echasnovski/mini.test";
+      flake = false;
+    };
+    luacov = {
+      url = "github:keplerproject/luacov";
+      flake = false;
+    };
+    luacov-reporter-lcov = {
+      url = "github:daurnimator/luacov-reporter-lcov";
+      flake = false;
+    };
   };
 
   outputs =
@@ -21,6 +33,9 @@
       treefmt-nix,
       flake-utils,
       nur-packages,
+      mini-test,
+      luacov,
+      luacov-reporter-lcov,
     }:
     flake-utils.lib.eachDefaultSystem (
       system:
@@ -90,22 +105,15 @@
             ghalint
             zizmor
           ];
-          nvfetcher = [
-            pkgs.nvfetcher
-          ];
           # keep-sorted end
           default = [
             treefmt.config.build.wrapper
           ]
-          ++ actions
-          ++ nvfetcher;
+          ++ actions;
         };
-        sources = pkgs.callPackage ./_sources/generated.nix { };
         neovim = pkgs.neovim-unwrapped;
         treesitter = pkgs.vimPlugins.nvim-treesitter.withAllGrammars;
-        mini = pkgs.vimPlugins.mini-nvim;
-        luacov = pkgs.lua51Packages.luacov;
-        luacov-reporter-lcov = sources.luacov-reporter-lcov.src;
+        mini = mini-test;
         mkInitVim =
           extraConfig:
           pkgs.writeTextFile {
@@ -121,7 +129,7 @@
         initVim = mkInitVim "";
         initVimWithCoverage =
           let
-            luacovPath = "${luacov}/share/lua/5.1";
+            luacovPath = "${luacov}/src";
             datafilePath = "${pkgs.lua51Packages.datafile}/share/lua/5.1";
             lcovReporterPath = "${luacov-reporter-lcov}";
           in
@@ -136,8 +144,8 @@
         coverageScript = pkgs.writeShellScriptBin "coverage" ''
           cd "$(${pkgs.lib.getExe pkgs.git} rev-parse --show-toplevel)"
           ${neovim}/bin/nvim --headless --clean -u ${initVimWithCoverage}/init.vim -l test/run.lua
-          export LUA_PATH="${luacov-reporter-lcov}/?.lua;${luacov-reporter-lcov}/?/init.lua;;"
-          ${luacov}/bin/luacov -r lcov
+          export LUA_PATH="${luacov}/src/?.lua;${luacov}/src/?/init.lua;${pkgs.lua51Packages.datafile}/share/lua/5.1/?.lua;${pkgs.lua51Packages.datafile}/share/lua/5.1/?/init.lua;${luacov-reporter-lcov}/?.lua;${luacov-reporter-lcov}/?/init.lua;;"
+          ${pkgs.lua5_1}/bin/lua ${luacov}/src/bin/luacov -r lcov
           ${pkgs.gnused}/bin/sed -i "s|SF:$PWD/|SF:|g" luacov.report.out
         '';
       in
