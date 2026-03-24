@@ -1,4 +1,0 @@
-[luacov-reporter-lcov]
-fetch.github = "daurnimator/luacov-reporter-lcov"
-src.git = "https://github.com/daurnimator/luacov-reporter-lcov"
-src.branch = "master"

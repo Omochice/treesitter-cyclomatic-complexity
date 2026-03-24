@@ -18,6 +18,54 @@
         "type": "github"
       }
     },
+    "luacov": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1770420870,
+        "narHash": "sha256-UI+6+0g3ldbKUsXCAgYll8v25gwEUn5A102Pn/H0c60=",
+        "owner": "keplerproject",
+        "repo": "luacov",
+        "rev": "b1f9eae400da976b93edb7f94cf5d05f538a0655",
+        "type": "github"
+      },
+      "original": {
+        "owner": "keplerproject",
+        "repo": "luacov",
+        "type": "github"
+      }
+    },
+    "luacov-reporter-lcov": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1572605922,
+        "narHash": "sha256-o+9E+pMVpWpd4M0gBnU0g9OA7UZjNbuqFa6WG2j73nE=",
+        "owner": "daurnimator",
+        "repo": "luacov-reporter-lcov",
+        "rev": "4d881ddb4eeec5ac0cd7d4b7679e3e59f9ac5745",
+        "type": "github"
+      },
+      "original": {
+        "owner": "daurnimator",
+        "repo": "luacov-reporter-lcov",
+        "type": "github"
+      }
+    },
+    "mini-test": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1771689579,
+        "narHash": "sha256-l3wwS3YrmoG+TK+DsDkVJ27doqE+/7rsZS4E+v39fxs=",
+        "owner": "echasnovski",
+        "repo": "mini.test",
+        "rev": "5e6e317a43c9d315daa4f211939b973f712b77be",
+        "type": "github"
+      },
+      "original": {
+        "owner": "echasnovski",
+        "repo": "mini.test",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1774243609,
@@ -58,6 +106,9 @@
     "root": {
       "inputs": {
         "flake-utils": "flake-utils",
+        "luacov": "luacov",
+        "luacov-reporter-lcov": "luacov-reporter-lcov",
+        "mini-test": "mini-test",
         "nixpkgs": "nixpkgs",
         "nur-packages": "nur-packages",
         "treefmt-nix": "treefmt-nix_2"
