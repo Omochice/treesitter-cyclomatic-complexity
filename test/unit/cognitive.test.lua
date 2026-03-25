@@ -141,5 +141,39 @@ describe("cognitive", function()
 				expect.equality(cognitive.count_complexity(node_data, "javascript"), 3)
 			end)
 		end)
+		describe("given same logical operator sequence in javascript", function()
+			it("should return 2 (if:+1, &&-sequence:+1)", function()
+				-- a && b && c is modeled as binary_expression(&&, binary_expression(&&, ...))
+				local node_data = helpers.make_function("javascript", {
+					helpers.if_node({
+						helpers.binary_expr("&&", { helpers.binary_expr("&&", {}) }),
+					}),
+				})
+				expect.equality(cognitive.count_complexity(node_data, "javascript"), 2)
+			end)
+		end)
+
+		describe("given mixed logical operators in javascript", function()
+			it("should return 3 (if:+1, &&:+1, ||:+1)", function()
+				-- a && b || c is modeled as binary_expression(||, binary_expression(&&, ...), ...)
+				local node_data = helpers.make_function("javascript", {
+					helpers.if_node({
+						helpers.binary_expr("||", { helpers.binary_expr("&&", {}) }),
+					}),
+				})
+				expect.equality(cognitive.count_complexity(node_data, "javascript"), 3)
+			end)
+		end)
+
+		describe("given boolean operators in python", function()
+			it("should return 2 (if:+1, and-sequence:+1)", function()
+				local node_data = helpers.make_function("python", {
+					helpers.if_node({
+						helpers.boolean_op("and", { helpers.boolean_op("and", {}) }),
+					}),
+				})
+				expect.equality(cognitive.count_complexity(node_data, "python"), 2)
+			end)
+		end)
 	end)
 end)

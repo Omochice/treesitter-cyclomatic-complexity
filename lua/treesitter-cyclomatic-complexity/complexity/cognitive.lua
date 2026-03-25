@@ -113,6 +113,24 @@ local basic_increment = {
 	rust = {},
 }
 
+-- Logical operators per language
+local logical_operators = {
+	javascript = { ["&&"] = true, ["||"] = true },
+	typescript = { ["&&"] = true, ["||"] = true },
+	python = { ["and"] = true, ["or"] = true },
+	c = { ["&&"] = true, ["||"] = true },
+	cpp = { ["&&"] = true, ["||"] = true },
+	java = { ["&&"] = true, ["||"] = true },
+	go = { ["&&"] = true, ["||"] = true },
+	rust = { ["&&"] = true, ["||"] = true },
+}
+
+-- Binary expression node types that may contain logical operators
+local binary_expr_types = {
+	binary_expression = true,
+	boolean_operator = true,
+}
+
 -- Constructs that increase nesting for children without receiving nesting penalty
 -- Needed for constructs whose parent (e.g. try_statement) does not increase nesting
 local nesting_increasers = {
@@ -127,13 +145,61 @@ local nesting_increasers = {
 -- @param node_data table { type: string, children: table[], operator?: string }
 -- @param lang string Language identifier
 -- @return number Cognitive complexity count
+-- Collect logical operator sequence from nested binary expressions
+-- Returns +1 for each contiguous group of same operators, +1 for each switch
+local function count_logical_operators(node, lang_ops)
+	if not binary_expr_types[node.type] or not node.operator then
+		return 0
+	end
+
+	if not lang_ops[node.operator] then
+		return 0
+	end
+
+	local ops = {}
+
+	-- Flatten the operator sequence left-to-right
+	local function flatten(n)
+		if not n then
+			return
+		end
+		if binary_expr_types[n.type] and n.operator and lang_ops[n.operator] then
+			if n.children then
+				for _, child in ipairs(n.children) do
+					flatten(child)
+				end
+			end
+			table.insert(ops, n.operator)
+		end
+	end
+
+	flatten(node)
+
+	if #ops == 0 then
+		return 0
+	end
+
+	-- Count: +1 for first operator, +1 for each switch to different operator
+	local result = 1
+	local prev = ops[1]
+	for i = 2, #ops do
+		if ops[i] ~= prev then
+			result = result + 1
+			prev = ops[i]
+		end
+	end
+
+	return result
+end
+
 M.count_complexity = function(node_data, lang)
 	local count = 0
 	local lang_nesting = nesting_incremented[lang] or {}
 	local lang_basic = basic_increment[lang] or {}
 	local lang_increasers = nesting_increasers[lang] or {}
+	local lang_ops = logical_operators[lang] or {}
 
-	local function traverse(node, nesting)
+	local function traverse(node, nesting, inside_logical)
 		if not node then
 			return
 		end
@@ -150,16 +216,32 @@ M.count_complexity = function(node_data, lang)
 			end
 		end
 
+		-- Handle logical operators: count at the topmost binary expression
+		if binary_expr_types[node.type] and node.operator and lang_ops[node.operator] and not inside_logical then
+			count = count + count_logical_operators(node, lang_ops)
+			-- Skip children that are part of the logical sequence to avoid double counting
+			if node.children then
+				for _, child in ipairs(node.children) do
+					if binary_expr_types[child.type] and child.operator and lang_ops[child.operator] then
+						traverse(child, next_nesting, true)
+					else
+						traverse(child, next_nesting, false)
+					end
+				end
+			end
+			return
+		end
+
 		if node.children then
 			for _, child in ipairs(node.children) do
-				traverse(child, next_nesting)
+				traverse(child, next_nesting, inside_logical)
 			end
 		end
 	end
 
 	if node_data.children then
 		for _, child in ipairs(node_data.children) do
-			traverse(child, 0)
+			traverse(child, 0, false)
 		end
 	end
 
