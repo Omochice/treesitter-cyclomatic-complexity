@@ -124,5 +124,22 @@ describe("cognitive", function()
 				expect.equality(cognitive.count_complexity(node_data, "javascript"), 3)
 			end)
 		end)
+		describe("given ternary at nesting 0 in javascript", function()
+			it("should return 1", function()
+				local node_data = helpers.make_function("javascript", {
+					helpers.ternary_node({}),
+				})
+				expect.equality(cognitive.count_complexity(node_data, "javascript"), 1)
+			end)
+		end)
+
+		describe("given nested ternary in javascript", function()
+			it("should return 3 (outer:+1+0, inner:+1+1)", function()
+				local node_data = helpers.make_function("javascript", {
+					helpers.ternary_node({ helpers.ternary_node({}) }),
+				})
+				expect.equality(cognitive.count_complexity(node_data, "javascript"), 3)
+			end)
+		end)
 	end)
 end)

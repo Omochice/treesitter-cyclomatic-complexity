@@ -72,6 +72,14 @@ M.boolean_op = function(operator, children)
 	return M.make_node("boolean_operator", children, operator)
 end
 
+M.ternary_node = function(children)
+	return M.make_node("conditional_expression", children)
+end
+
+M.ternary_java_node = function(children)
+	return M.make_node("ternary_expression", children)
+end
+
 M.else_node = function(children)
 	return M.make_node("else_clause", children)
 end

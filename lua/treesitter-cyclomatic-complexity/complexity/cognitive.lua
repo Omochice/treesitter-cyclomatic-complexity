@@ -19,6 +19,7 @@ local nesting_incremented = {
 		while_statement = true,
 		do_statement = true,
 		switch_statement = true,
+		conditional_expression = true,
 	},
 	typescript = {
 		if_statement = true,
@@ -28,11 +29,13 @@ local nesting_incremented = {
 		while_statement = true,
 		do_statement = true,
 		switch_statement = true,
+		conditional_expression = true,
 	},
 	python = {
 		if_statement = true,
 		for_statement = true,
 		while_statement = true,
+		conditional_expression = true,
 	},
 	c = {
 		if_statement = true,
@@ -40,6 +43,7 @@ local nesting_incremented = {
 		while_statement = true,
 		do_statement = true,
 		switch_statement = true,
+		conditional_expression = true,
 	},
 	cpp = {
 		if_statement = true,
@@ -48,6 +52,7 @@ local nesting_incremented = {
 		do_statement = true,
 		for_range_loop = true,
 		switch_statement = true,
+		conditional_expression = true,
 	},
 	java = {
 		if_statement = true,
@@ -56,6 +61,7 @@ local nesting_incremented = {
 		while_statement = true,
 		do_statement = true,
 		switch_expression = true,
+		ternary_expression = true,
 	},
 	go = {
 		if_statement = true,
