@@ -175,5 +175,22 @@ describe("cognitive", function()
 				expect.equality(cognitive.count_complexity(node_data, "python"), 2)
 			end)
 		end)
+		describe("given nested lambda containing if in javascript", function()
+			it("should return 2 (lambda increases nesting, if:+1+1)", function()
+				local node_data = helpers.make_function("javascript", {
+					helpers.lambda_node({ helpers.if_node({}) }),
+				})
+				expect.equality(cognitive.count_complexity(node_data, "javascript"), 2)
+			end)
+		end)
+
+		describe("given nested function expression containing if in javascript", function()
+			it("should return 2 (function_expression increases nesting, if:+1+1)", function()
+				local node_data = helpers.make_function("javascript", {
+					helpers.nested_function_node({ helpers.if_node({}) }),
+				})
+				expect.equality(cognitive.count_complexity(node_data, "javascript"), 2)
+			end)
+		end)
 	end)
 end)

@@ -134,11 +134,15 @@ local binary_expr_types = {
 -- Constructs that increase nesting for children without receiving nesting penalty
 -- Needed for constructs whose parent (e.g. try_statement) does not increase nesting
 local nesting_increasers = {
-	javascript = { catch_clause = true },
-	typescript = { catch_clause = true },
-	python = { except_clause = true },
-	cpp = { catch_clause = true },
-	java = { catch_clause = true },
+	lua = { function_definition = true },
+	javascript = { catch_clause = true, arrow_function = true, function_expression = true },
+	typescript = { catch_clause = true, arrow_function = true, function_expression = true },
+	python = { except_clause = true, lambda = true },
+	c = {},
+	cpp = { catch_clause = true, lambda_expression = true },
+	java = { catch_clause = true, lambda_expression = true },
+	go = { func_literal = true },
+	rust = { closure_expression = true },
 }
 
 -- Count cognitive complexity from a structured node representation
@@ -211,9 +215,12 @@ M.count_complexity = function(node_data, lang)
 			next_nesting = nesting + 1
 		elseif lang_basic[node.type] then
 			count = count + 1
-			if lang_increasers[node.type] then
-				next_nesting = nesting + 1
-			end
+		end
+
+		-- Nesting increasers: constructs that increase nesting for children
+		-- without necessarily receiving an increment themselves (e.g. catch, lambda)
+		if lang_increasers[node.type] and not lang_nesting[node.type] then
+			next_nesting = nesting + 1
 		end
 
 		-- Handle logical operators: count at the topmost binary expression
