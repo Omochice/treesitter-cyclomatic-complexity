@@ -11,6 +11,23 @@ local nesting_incremented = {
 		while_statement = true,
 		repeat_statement = true,
 	},
+	python = {
+		if_statement = true,
+		for_statement = true,
+		while_statement = true,
+	},
+}
+
+-- Constructs that receive +1 only (no nesting penalty) but increase nesting for children
+local basic_increment = {
+	lua = {
+		else_clause = true,
+		elseif_statement = true,
+	},
+	python = {
+		elif_clause = true,
+		else_clause = true,
+	},
 }
 
 -- Count cognitive complexity from a structured node representation
@@ -20,6 +37,7 @@ local nesting_incremented = {
 M.count_complexity = function(node_data, lang)
 	local count = 0
 	local lang_nesting = nesting_incremented[lang] or {}
+	local lang_basic = basic_increment[lang] or {}
 
 	local function traverse(node, nesting)
 		if not node then
@@ -31,6 +49,8 @@ M.count_complexity = function(node_data, lang)
 		if lang_nesting[node.type] then
 			count = count + 1 + nesting
 			next_nesting = nesting + 1
+		elseif lang_basic[node.type] then
+			count = count + 1
 		end
 
 		if node.children then

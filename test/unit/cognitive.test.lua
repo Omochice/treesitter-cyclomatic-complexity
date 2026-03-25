@@ -50,5 +50,32 @@ describe("cognitive", function()
 				expect.equality(cognitive.count_complexity(node_data, "lua"), 6)
 			end)
 		end)
+
+		describe("given else clause", function()
+			it("should return 2 (if:+1+0, else:+1 no nesting penalty)", function()
+				local node_data = helpers.make_function("lua", {
+					helpers.if_node({ helpers.else_node({}) }),
+				})
+				expect.equality(cognitive.count_complexity(node_data, "lua"), 2)
+			end)
+		end)
+
+		describe("given elseif clause in lua", function()
+			it("should return 2 (if:+1+0, elseif:+1 no nesting penalty)", function()
+				local node_data = helpers.make_function("lua", {
+					helpers.if_node({ helpers.elseif_node({}) }),
+				})
+				expect.equality(cognitive.count_complexity(node_data, "lua"), 2)
+			end)
+		end)
+
+		describe("given elif clause in python", function()
+			it("should return 2 (if:+1+0, elif:+1 no nesting penalty)", function()
+				local node_data = helpers.make_function("python", {
+					helpers.if_node({ helpers.elif_node({}) }),
+				})
+				expect.equality(cognitive.count_complexity(node_data, "python"), 2)
+			end)
+		end)
 	end)
 end)

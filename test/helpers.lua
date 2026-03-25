@@ -72,6 +72,10 @@ M.boolean_op = function(operator, children)
 	return M.make_node("boolean_operator", children, operator)
 end
 
+M.else_node = function(children)
+	return M.make_node("else_clause", children)
+end
+
 -- Python specific
 M.elif_node = function(children)
 	return M.make_node("elif_clause", children)
