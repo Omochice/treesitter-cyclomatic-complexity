@@ -107,5 +107,22 @@ describe("cognitive", function()
 				expect.equality(cognitive.count_complexity(node_data, "javascript"), 3)
 			end)
 		end)
+		describe("given try-catch in javascript", function()
+			it("should return 1 (try:+0, catch:+1)", function()
+				local node_data = helpers.make_function("javascript", {
+					helpers.try_node({ helpers.catch_node({}) }),
+				})
+				expect.equality(cognitive.count_complexity(node_data, "javascript"), 1)
+			end)
+		end)
+
+		describe("given if inside catch in javascript", function()
+			it("should return 3 (catch:+1, if:+1+1)", function()
+				local node_data = helpers.make_function("javascript", {
+					helpers.try_node({ helpers.catch_node({ helpers.if_node({}) }) }),
+				})
+				expect.equality(cognitive.count_complexity(node_data, "javascript"), 3)
+			end)
+		end)
 	end)
 end)

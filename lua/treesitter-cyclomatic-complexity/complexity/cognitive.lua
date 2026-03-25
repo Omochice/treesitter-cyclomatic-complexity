@@ -73,16 +73,48 @@ local nesting_incremented = {
 	},
 }
 
--- Constructs that receive +1 only (no nesting penalty) but increase nesting for children
+-- Constructs that receive +1 only (no nesting penalty)
+-- Nesting for children is inherited from the parent, not further increased
 local basic_increment = {
 	lua = {
 		else_clause = true,
 		elseif_statement = true,
 	},
+	javascript = {
+		else_clause = true,
+		catch_clause = true,
+	},
+	typescript = {
+		else_clause = true,
+		catch_clause = true,
+	},
 	python = {
 		elif_clause = true,
 		else_clause = true,
+		except_clause = true,
 	},
+	c = {
+		else_clause = true,
+	},
+	cpp = {
+		else_clause = true,
+		catch_clause = true,
+	},
+	java = {
+		catch_clause = true,
+	},
+	go = {},
+	rust = {},
+}
+
+-- Constructs that increase nesting for children without receiving nesting penalty
+-- Needed for constructs whose parent (e.g. try_statement) does not increase nesting
+local nesting_increasers = {
+	javascript = { catch_clause = true },
+	typescript = { catch_clause = true },
+	python = { except_clause = true },
+	cpp = { catch_clause = true },
+	java = { catch_clause = true },
 }
 
 -- Count cognitive complexity from a structured node representation
@@ -93,6 +125,7 @@ M.count_complexity = function(node_data, lang)
 	local count = 0
 	local lang_nesting = nesting_incremented[lang] or {}
 	local lang_basic = basic_increment[lang] or {}
+	local lang_increasers = nesting_increasers[lang] or {}
 
 	local function traverse(node, nesting)
 		if not node then
@@ -106,6 +139,9 @@ M.count_complexity = function(node_data, lang)
 			next_nesting = nesting + 1
 		elseif lang_basic[node.type] then
 			count = count + 1
+			if lang_increasers[node.type] then
+				next_nesting = nesting + 1
+			end
 		end
 
 		if node.children then
