@@ -26,13 +26,16 @@ M.count_complexity = function(node_data, lang)
 			return
 		end
 
+		local next_nesting = nesting
+
 		if lang_nesting[node.type] then
 			count = count + 1 + nesting
+			next_nesting = nesting + 1
 		end
 
 		if node.children then
 			for _, child in ipairs(node.children) do
-				traverse(child, nesting)
+				traverse(child, next_nesting)
 			end
 		end
 	end

@@ -32,5 +32,23 @@ describe("cognitive", function()
 				expect.equality(cognitive.count_complexity(node_data, "lua"), 1)
 			end)
 		end)
+
+		describe("given if nested inside for", function()
+			it("should return 3 (for:+1+0, if:+1+1)", function()
+				local node_data = helpers.make_function("lua", {
+					helpers.for_node({ helpers.if_node({}) }),
+				})
+				expect.equality(cognitive.count_complexity(node_data, "lua"), 3)
+			end)
+		end)
+
+		describe("given deeply nested structures", function()
+			it("should return 6 (for:+1+0, if:+1+1, while:+1+2)", function()
+				local node_data = helpers.make_function("lua", {
+					helpers.for_node({ helpers.if_node({ helpers.while_node({}) }) }),
+				})
+				expect.equality(cognitive.count_complexity(node_data, "lua"), 6)
+			end)
+		end)
 	end)
 end)
