@@ -2,6 +2,7 @@
 -- Main interface for complexity calculation
 
 local counter = require("treesitter-cyclomatic-complexity.complexity.counter")
+local cognitive = require("treesitter-cyclomatic-complexity.complexity.cognitive")
 local levels = require("treesitter-cyclomatic-complexity.complexity.levels")
 
 local M = {}
@@ -26,40 +27,52 @@ local function is_language_supported(lang)
 	return supported_languages[lang] == true
 end
 
+-- Get the current metric from config, with fallback
+-- @return string "cyclomatic" | "cognitive"
+local function get_metric()
+	local ok, config = pcall(require, "treesitter-cyclomatic-complexity.config")
+	if ok and config.get then
+		return config.get("metric") or "cyclomatic"
+	end
+	return "cyclomatic"
+end
+
 -- Calculate complexity for function node data
 -- @param node_data table Structured node representation
 -- @param lang string Language identifier
--- @return number Complexity value (base 1 + decision points)
-M.calculate_function_complexity = function(node_data, lang)
+-- @param metric string|nil Optional metric override ("cyclomatic" | "cognitive")
+-- @return number Complexity value
+M.calculate_function_complexity = function(node_data, lang, metric)
+	metric = metric or get_metric()
+
 	if not node_data or not is_language_supported(lang) then
-		return 1 -- Base complexity
+		return metric == "cognitive" and 0 or 1
 	end
 
-	-- Start with base complexity of 1
-	local base = 1
+	if metric == "cognitive" then
+		return cognitive.count_complexity(node_data, lang)
+	end
 
-	-- Count control flow constructs
-	local decision_points = counter.count_complexity(node_data, lang)
-
-	return base + decision_points
+	return 1 + counter.count_complexity(node_data, lang)
 end
 
 -- Calculate complexity for loop node data
 -- @param node_data table Structured node representation
 -- @param lang string Language identifier
--- @return number Complexity value (base 1 + decision points)
-M.calculate_loop_complexity = function(node_data, lang)
+-- @param metric string|nil Optional metric override ("cyclomatic" | "cognitive")
+-- @return number Complexity value
+M.calculate_loop_complexity = function(node_data, lang, metric)
+	metric = metric or get_metric()
+
 	if not node_data or not is_language_supported(lang) then
-		return 1 -- Base complexity
+		return metric == "cognitive" and 0 or 1
 	end
 
-	-- Start with base complexity of 1
-	local base = 1
+	if metric == "cognitive" then
+		return cognitive.count_complexity(node_data, lang)
+	end
 
-	-- Count control flow constructs within the loop
-	local decision_points = counter.count_complexity(node_data, lang)
-
-	return base + decision_points
+	return 1 + counter.count_complexity(node_data, lang)
 end
 
 -- Calculate complexity based on node type
