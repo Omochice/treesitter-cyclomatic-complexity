@@ -1,0 +1,36 @@
+local expect = MiniTest.expect
+
+local cognitive = require("treesitter-cyclomatic-complexity.complexity.cognitive")
+local helpers = dofile("test/helpers.lua")
+
+describe("cognitive", function()
+	describe("count_complexity()", function()
+		describe("given empty function node", function()
+			it("should return 0", function()
+				local node_data = helpers.make_function("lua", {})
+				expect.equality(cognitive.count_complexity(node_data, "lua"), 0)
+			end)
+		end)
+
+		describe("given single if at nesting 0", function()
+			it("should return 1", function()
+				local node_data = helpers.make_function("lua", { helpers.if_node({}) })
+				expect.equality(cognitive.count_complexity(node_data, "lua"), 1)
+			end)
+		end)
+
+		describe("given single for at nesting 0", function()
+			it("should return 1", function()
+				local node_data = helpers.make_function("lua", { helpers.for_node({}) })
+				expect.equality(cognitive.count_complexity(node_data, "lua"), 1)
+			end)
+		end)
+
+		describe("given single while at nesting 0", function()
+			it("should return 1", function()
+				local node_data = helpers.make_function("lua", { helpers.while_node({}) })
+				expect.equality(cognitive.count_complexity(node_data, "lua"), 1)
+			end)
+		end)
+	end)
+end)
