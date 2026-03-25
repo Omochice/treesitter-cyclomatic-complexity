@@ -77,5 +77,14 @@ describe("cognitive", function()
 				expect.equality(cognitive.count_complexity(node_data, "python"), 2)
 			end)
 		end)
+
+		describe("given if nested inside else", function()
+			it("should return 4 (if:+1+0, else:+1, inner if:+1+1)", function()
+				local node_data = helpers.make_function("lua", {
+					helpers.if_node({ helpers.else_node({ helpers.if_node({}) }) }),
+				})
+				expect.equality(cognitive.count_complexity(node_data, "lua"), 4)
+			end)
+		end)
 	end)
 end)
