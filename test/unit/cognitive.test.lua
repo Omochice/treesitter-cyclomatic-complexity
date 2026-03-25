@@ -86,5 +86,26 @@ describe("cognitive", function()
 				expect.equality(cognitive.count_complexity(node_data, "lua"), 4)
 			end)
 		end)
+		describe("given switch with multiple cases in javascript", function()
+			it("should return 1 (switch:+1+0, cases:+0)", function()
+				local node_data = helpers.make_function("javascript", {
+					helpers.switch_node({
+						helpers.case_node({}),
+						helpers.case_node({}),
+						helpers.case_node({}),
+					}),
+				})
+				expect.equality(cognitive.count_complexity(node_data, "javascript"), 1)
+			end)
+		end)
+
+		describe("given switch nested inside if in javascript", function()
+			it("should return 3 (if:+1+0, switch:+1+1)", function()
+				local node_data = helpers.make_function("javascript", {
+					helpers.if_node({ helpers.switch_node({ helpers.case_node({}) }) }),
+				})
+				expect.equality(cognitive.count_complexity(node_data, "javascript"), 3)
+			end)
+		end)
 	end)
 end)
