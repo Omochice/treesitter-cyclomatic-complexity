@@ -44,12 +44,12 @@ local function get_metric()
 	return "cyclomatic"
 end
 
--- Calculate complexity for function node data
+-- Calculate complexity for node data
 -- @param node_data table Structured node representation
 -- @param lang string Language identifier
 -- @param metric string|nil Optional metric override ("cyclomatic" | "cognitive")
 -- @return number Complexity value
-M.calculate_function_complexity = function(node_data, lang, metric)
+local function calculate_complexity(node_data, lang, metric)
 	metric = metric or get_metric()
 
 	if not node_data or not is_language_supported(lang) then
@@ -63,24 +63,8 @@ M.calculate_function_complexity = function(node_data, lang, metric)
 	return 1 + counter.count_complexity(node_data, lang)
 end
 
--- Calculate complexity for loop node data
--- @param node_data table Structured node representation
--- @param lang string Language identifier
--- @param metric string|nil Optional metric override ("cyclomatic" | "cognitive")
--- @return number Complexity value
-M.calculate_loop_complexity = function(node_data, lang, metric)
-	metric = metric or get_metric()
-
-	if not node_data or not is_language_supported(lang) then
-		return metric == "cognitive" and 0 or 1
-	end
-
-	if metric == "cognitive" then
-		return cognitive.count_complexity(node_data, lang)
-	end
-
-	return 1 + counter.count_complexity(node_data, lang)
-end
+M.calculate_function_complexity = calculate_complexity
+M.calculate_loop_complexity = calculate_complexity
 
 -- Calculate complexity based on node type
 -- @param node_info table { type: string, node_data: table }
