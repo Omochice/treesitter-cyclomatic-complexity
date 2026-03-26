@@ -28,11 +28,18 @@ local function is_language_supported(lang)
 end
 
 -- Get the current metric from config, with fallback
+-- Lazy-loaded to avoid circular dependency at require time
 -- @return string "cyclomatic" | "cognitive"
+local config_module
 local function get_metric()
-	local ok, config = pcall(require, "treesitter-cyclomatic-complexity.config")
-	if ok and config.get then
-		return config.get("metric") or "cyclomatic"
+	if not config_module then
+		local ok, mod = pcall(require, "treesitter-cyclomatic-complexity.config")
+		if ok then
+			config_module = mod
+		end
+	end
+	if config_module and config_module.get then
+		return config_module.get("metric") or "cyclomatic"
 	end
 	return "cyclomatic"
 end
