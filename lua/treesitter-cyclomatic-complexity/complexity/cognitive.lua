@@ -147,38 +147,28 @@ local function count_logical_operators(node, lang_ops)
 		return 0
 	end
 
-	local ops = {}
+	-- Count operator transitions in a single pass without collecting into an array
+	local result = 1
+	local prev_op = nil
 
-	-- Flatten the operator sequence left-to-right
-	local function flatten(n)
+	local function flatten_count(n)
 		if not n then
 			return
 		end
 		if binary_expr_types[n.type] and n.operator and lang_ops[n.operator] then
 			if n.children then
 				for _, child in ipairs(n.children) do
-					flatten(child)
+					flatten_count(child)
 				end
 			end
-			table.insert(ops, n.operator)
+			if prev_op and n.operator ~= prev_op then
+				result = result + 1
+			end
+			prev_op = n.operator
 		end
 	end
 
-	flatten(node)
-
-	if #ops == 0 then
-		return 0
-	end
-
-	-- Count: +1 for first operator, +1 for each switch to different operator
-	local result = 1
-	local prev = ops[1]
-	for i = 2, #ops do
-		if ops[i] ~= prev then
-			result = result + 1
-			prev = ops[i]
-		end
-	end
+	flatten_count(node)
 
 	return result
 end
