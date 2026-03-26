@@ -33,17 +33,8 @@ M.get_highlight_group = function(complexity_value, thresholds)
 	return highlight_groups[level] or highlight_groups.low
 end
 
-local default_formats = {
-	cyclomatic = "CC: %d",
-	cognitive = "CogC: %d",
-}
-
 M.format_complexity_text = function(complexity_value, format_string)
-	if not format_string then
-		local metric = config.get("metric") or "cyclomatic"
-		format_string = default_formats[metric] or default_formats.cyclomatic
-	end
-	return string.format(format_string, complexity_value)
+	return string.format(format_string or "CC: %d", complexity_value)
 end
 
 M.show_complexity = function(bufnr, line, complexity_value, opts)
