@@ -1,6 +1,8 @@
 -- Cognitive Complexity counter
 -- Implements SonarQube's Cognitive Complexity metric
 
+local operators = require("treesitter-cyclomatic-complexity.complexity.operators")
+
 local M = {}
 
 -- Constructs that receive +1 and +nesting_level
@@ -113,23 +115,8 @@ local basic_increment = {
 	rust = {},
 }
 
--- Logical operators per language
-local logical_operators = {
-	javascript = { ["&&"] = true, ["||"] = true },
-	typescript = { ["&&"] = true, ["||"] = true },
-	python = { ["and"] = true, ["or"] = true },
-	c = { ["&&"] = true, ["||"] = true },
-	cpp = { ["&&"] = true, ["||"] = true },
-	java = { ["&&"] = true, ["||"] = true },
-	go = { ["&&"] = true, ["||"] = true },
-	rust = { ["&&"] = true, ["||"] = true },
-}
-
--- Binary expression node types that may contain logical operators
-local binary_expr_types = {
-	binary_expression = true,
-	boolean_operator = true,
-}
+local logical_operators = operators.logical_operators
+local binary_expr_types = operators.binary_expr_types
 
 -- Constructs that increase nesting for children without receiving nesting penalty
 -- Needed for constructs whose parent (e.g. try_statement) does not increase nesting

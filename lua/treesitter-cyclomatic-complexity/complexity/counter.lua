@@ -1,6 +1,8 @@
 -- Complexity counting logic
 -- Pure functions - no Neovim API dependencies
 
+local operators = require("treesitter-cyclomatic-complexity.complexity.operators")
+
 local M = {}
 
 -- Control flow patterns for each supported language
@@ -100,17 +102,7 @@ local control_flow_patterns = {
 	},
 }
 
--- Logical operators for each language
-local logical_operators = {
-	javascript = { ["&&"] = true, ["||"] = true },
-	typescript = { ["&&"] = true, ["||"] = true },
-	python = { ["and"] = true, ["or"] = true },
-	c = { ["&&"] = true, ["||"] = true },
-	cpp = { ["&&"] = true, ["||"] = true },
-	java = { ["&&"] = true, ["||"] = true },
-	go = { ["&&"] = true, ["||"] = true },
-	rust = { ["&&"] = true, ["||"] = true },
-}
+local logical_operators = operators.logical_operators
 
 -- Get control flow patterns for a language
 -- @param lang string Language identifier
