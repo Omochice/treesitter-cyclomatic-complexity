@@ -2,6 +2,7 @@ local M = {}
 
 M.defaults = {
 	enabled = true,
+	metric = "cyclomatic",
 	auto_update = true,
 	display = {
 		format = "CC: %d",
@@ -43,6 +44,11 @@ M.validate_config = function(config)
 	-- Ensure required fields exist and have valid values
 	if type(config.enabled) ~= "boolean" then
 		config.enabled = M.defaults.enabled
+	end
+
+	local valid_metrics = { cyclomatic = true, cognitive = true }
+	if not valid_metrics[config.metric] then
+		config.metric = M.defaults.metric
 	end
 
 	if type(config.auto_update) ~= "boolean" then

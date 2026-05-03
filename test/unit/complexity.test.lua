@@ -130,4 +130,27 @@ describe("complexity", function()
 			end)
 		end)
 	end)
+
+	describe("calculate_function_complexity() with metric override", function()
+		describe("given cognitive metric", function()
+			it("should return cognitive complexity (base 0)", function()
+				local node_data = helpers.make_function("lua", {})
+				expect.equality(complexity.calculate_function_complexity(node_data, "lua", "cognitive"), 0)
+			end)
+
+			it("should count with nesting penalty", function()
+				local node_data = helpers.make_function("lua", {
+					helpers.for_node({ helpers.if_node({}) }),
+				})
+				expect.equality(complexity.calculate_function_complexity(node_data, "lua", "cognitive"), 3)
+			end)
+		end)
+
+		describe("given cyclomatic metric explicitly", function()
+			it("should return cyclomatic complexity (base 1)", function()
+				local node_data = helpers.make_function("lua", {})
+				expect.equality(complexity.calculate_function_complexity(node_data, "lua", "cyclomatic"), 1)
+			end)
+		end)
+	end)
 end)
