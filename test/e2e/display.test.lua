@@ -69,6 +69,26 @@ describe("display", function()
 		end)
 	end)
 
+	describe("update_display()", function()
+		describe("given lua buffer with a named function", function()
+			it("should place exactly one mark on the definition line", function()
+				vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, {
+					"local function foo()",
+					"  return 1",
+					"end",
+				})
+				vim.bo[bufnr].filetype = "lua"
+
+				display.update_display(bufnr)
+
+				local marks = vim.api.nvim_buf_get_extmarks(bufnr, ns, 0, -1, { details = true })
+				expect.equality(#marks, 1)
+				expect.equality(marks[1][2], 0)
+				expect.equality(marks[1][4].virt_text[1][1], "CC: 1")
+			end)
+		end)
+	end)
+
 	describe("clear_complexity()", function()
 		describe("given buffer with extmarks", function()
 			it("should remove all extmarks when called without line", function()
