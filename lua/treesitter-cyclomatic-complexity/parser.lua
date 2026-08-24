@@ -212,25 +212,25 @@ M.get_function_nodes = function(bufnr, lang)
 
 	local root = tree:root()
 	local query = vim.treesitter.query.parse(lang, queries[lang].functions)
-	local nodes = {}
 
-	for id, node in query:iter_captures(root, bufnr) do
-		-- The queries also capture @name so that named and anonymous functions can
-		-- share one pattern; only @function marks the node complexity applies to.
-		if query.captures[id] == "function" then
+	-- The queries also capture @name so that named and anonymous functions can
+	-- share one pattern; only @function marks the node complexity applies to.
+	return vim.iter(query:iter_captures(root, bufnr))
+		:filter(function(id)
+			return query.captures[id] == "function"
+		end)
+		:map(function(_, node)
 			local start_row, start_col, end_row, end_col = node:range()
-			table.insert(nodes, {
+			return {
 				node = node,
 				start_row = start_row,
 				start_col = start_col,
 				end_row = end_row,
 				end_col = end_col,
 				type = "function",
-			})
-		end
-	end
-
-	return nodes
+			}
+		end)
+		:totable()
 end
 
 M.get_loop_nodes = function(bufnr, lang)
