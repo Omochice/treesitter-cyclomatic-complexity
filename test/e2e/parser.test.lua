@@ -54,6 +54,39 @@ end
 			end)
 		end)
 
+		describe("given lua buffer with a single named function", function()
+			it("should return one node per function, not one per capture", function()
+				set_buf_content(
+					[[
+local function foo()
+  return 1
+end
+]],
+					"lua"
+				)
+
+				local nodes = parser.get_function_nodes(bufnr, "lua")
+				expect.equality(#nodes, 1)
+			end)
+
+			it("should return the node spanning the whole function, not its name", function()
+				set_buf_content(
+					[[
+local function foo()
+  return 1
+end
+]],
+					"lua"
+				)
+
+				local nodes = parser.get_function_nodes(bufnr, "lua")
+				for _, node_info in ipairs(nodes) do
+					expect.equality(node_info.start_row, 0)
+					expect.equality(node_info.end_row, 2)
+				end
+			end)
+		end)
+
 		describe("given unsupported language", function()
 			it("should return empty table", function()
 				vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, { "some content" })
