@@ -1,2 +1,3 @@
 luacov.stats.out
 luacov.report.out
+.pre-commit-config.yaml
