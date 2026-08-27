@@ -12,6 +12,10 @@
       url = "github:Omochice/nur-packages";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    git-hooks = {
+      url = "github:cachix/git-hooks.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     mini-test = {
       url = "github:echasnovski/mini.test";
       flake = false;
@@ -33,6 +37,7 @@
       treefmt-nix,
       flake-utils,
       nur-packages,
+      git-hooks,
       mini-test,
       luacov,
       luacov-reporter-lcov,
@@ -98,6 +103,68 @@
             };
           }
         );
+        pre-commit-check = git-hooks.lib.${system}.run {
+          package = pkgs.prek;
+          src = ./.;
+          hooks = {
+            actionlint = {
+              enable = true;
+              stages = [ "pre-push" ];
+            };
+            ghalint = {
+              enable = true;
+              name = "ghalint";
+              entry = "${pkgs.lib.getExe pkgs.ghalint} run";
+              files = "^\\.github/workflows/";
+              pass_filenames = false;
+              stages = [ "pre-push" ];
+            };
+            # Claude Code sets CLAUDECODE; humans are covered by the pre-push hook
+            gitleaks-commit = {
+              enable = true;
+              name = "gitleaks (claude commit)";
+              entry = pkgs.lib.getExe (
+                pkgs.writeShellApplication {
+                  name = "gitleaks-when-claude";
+                  runtimeInputs = [ pkgs.gitleaks ];
+                  text = ''
+                    if [ -z "''${CLAUDECODE:-}" ]; then
+                      exit 0
+                    fi
+                    gitleaks git --pre-commit --staged --no-banner --redact
+                  '';
+                }
+              );
+              pass_filenames = false;
+              stages = [ "pre-commit" ];
+            };
+            gitleaks-push = {
+              enable = true;
+              name = "gitleaks";
+              entry = "${pkgs.lib.getExe pkgs.gitleaks} git --no-banner --redact";
+              pass_filenames = false;
+              stages = [ "pre-push" ];
+            };
+            renovate = {
+              enable = true;
+              name = "renovate-config-validator";
+              entry = "${pkgs.lib.getExe' pkgs.renovate "renovate-config-validator"} --strict";
+              files = "^renovate\\.json5$";
+              stages = [ "pre-push" ];
+            };
+            treefmt = {
+              enable = true;
+              packageOverrides.treefmt = treefmt.config.build.wrapper;
+              stages = [ "pre-push" ];
+            };
+            # The default only covers workflows, but composite actions are checked too
+            zizmor = {
+              enable = true;
+              files = "^\\.github/(workflows|actions)/";
+              stages = [ "pre-push" ];
+            };
+          };
+        };
         devPackages = rec {
           # keep-sorted start block=yes
           actions = with pkgs; [
@@ -183,6 +250,7 @@
                 touch $out
               '';
           formatting = treefmt.config.build.check self;
+          pre-commit = pre-commit-check;
           renovate =
             pkgs.runCommand "validate-renovate-config"
               {
@@ -199,7 +267,13 @@
           # keep-sorted end
         };
         devShells = pkgs.lib.pipe devPackages [
-          (pkgs.lib.attrsets.mapAttrs (name: buildInputs: pkgs.mkShell { inherit buildInputs; }))
+          (pkgs.lib.attrsets.mapAttrs (
+            name: buildInputs:
+            pkgs.mkShell {
+              buildInputs = buildInputs ++ pre-commit-check.enabledPackages;
+              inherit (pre-commit-check) shellHook;
+            }
+          ))
         ];
         formatter = treefmt.config.build.wrapper;
         # keep-sorted end
