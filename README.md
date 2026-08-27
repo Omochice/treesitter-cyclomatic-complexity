@@ -237,12 +237,34 @@ end
 
 ## Color Coding
 
-The plugin uses color-coded highlighting based on complexity thresholds:
+Each complexity level has its own highlight group. The defaults link to groups the
+colorscheme already defines, so the virtual text follows the active theme and
+inherits its `ctermfg`. Low complexity is the common case, so it links to `Comment`
+and stays out of the way.
 
-- 🟢 **Low** (≤ 5): Green - Simple, easy to understand
-- 🟡 **Medium** (6-10): Yellow - Moderate complexity
-- 🔴 **High** (11-15): Red - Complex, consider refactoring
-- 🔴 **Very High** (>15): Dark Red, Bold - Very complex, needs refactoring
+Which severity a level maps to follows McCabe's limit of 10, recorded in
+[NIST SP 500-235](https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication500-235.pdf)
+section 2.5 along with the 15 some projects use instead. Complexity within that
+limit stays informational, and warning starts once it is passed.
+
+| Level     | Complexity | Highlight group                | Default                           |
+| --------- | ---------- | ------------------------------ | --------------------------------- |
+| Low       | ≤ 5        | `CyclomaticComplexityLow`      | links to `Comment`                |
+| Medium    | 6-10       | `CyclomaticComplexityMedium`   | links to `DiagnosticInfo`         |
+| High      | 11-15      | `CyclomaticComplexityHigh`     | links to `DiagnosticWarn`         |
+| Very High | > 15       | `CyclomaticComplexityVeryHigh` | links to `DiagnosticError`        |
+
+The defaults are declared with `default = true`, so any definition of your own wins.
+Define them from a `ColorScheme` autocommand, because `:colorscheme` clears
+highlight groups and restores the plugin's default links:
+
+```lua
+vim.api.nvim_create_autocmd("ColorScheme", {
+  callback = function()
+    vim.api.nvim_set_hl(0, "CyclomaticComplexityHigh", { fg = "#EF4444" })
+  end,
+})
+```
 
 ## Performance
 

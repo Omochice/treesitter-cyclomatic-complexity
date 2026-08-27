@@ -7,9 +7,10 @@ CONTENTS                                *treesitter-cyclomatic-complexity-conten
 2. Requirements ........................ |treesitter-cyclomatic-complexity-requirements|
 3. Installation ........................ |treesitter-cyclomatic-complexity-installation|
 4. Configuration ....................... |treesitter-cyclomatic-complexity-configuration|
-5. Commands ............................ |treesitter-cyclomatic-complexity-commands|
-6. Functions ........................... |treesitter-cyclomatic-complexity-functions|
-7. Examples ............................ |treesitter-cyclomatic-complexity-examples|
+5. Highlights .......................... |treesitter-cyclomatic-complexity-highlights|
+6. Commands ............................ |treesitter-cyclomatic-complexity-commands|
+7. Functions ........................... |treesitter-cyclomatic-complexity-functions|
+8. Examples ............................ |treesitter-cyclomatic-complexity-examples|
 
 ================================================================================
 1. INTRODUCTION                        *treesitter-cyclomatic-complexity-intro*
@@ -114,7 +115,46 @@ Vim configuration variable:
 <
 
 ================================================================================
-5. COMMANDS                        *treesitter-cyclomatic-complexity-commands*
+5. HIGHLIGHTS                      *treesitter-cyclomatic-complexity-highlights*
+
+Each complexity level has its own highlight group. The defaults link to groups
+the colorscheme already defines, so the virtual text follows the active theme
+and inherits its ctermfg value. Low complexity is the common case, so it
+links to Comment and stays out of the way.
+
+Which severity a level maps to follows McCabe's limit of 10, recorded in NIST
+SP 500-235 section 2.5 along with the 15 some projects use instead. Complexity
+within that limit stays informational, and warning starts once it is passed.
+
+                                   *hl-CyclomaticComplexityLow*
+CyclomaticComplexityLow
+    Complexity up to "thresholds.low". Links to Comment.
+
+                                   *hl-CyclomaticComplexityMedium*
+CyclomaticComplexityMedium
+    Complexity up to "thresholds.medium". Links to DiagnosticInfo.
+
+                                   *hl-CyclomaticComplexityHigh*
+CyclomaticComplexityHigh
+    Complexity up to "thresholds.high". Links to DiagnosticWarn.
+
+                                   *hl-CyclomaticComplexityVeryHigh*
+CyclomaticComplexityVeryHigh
+    Complexity above "thresholds.high". Links to DiagnosticError.
+
+The defaults are declared with "default = true", so any definition of your own
+wins. Define them from a |ColorScheme| autocommand, because :colorscheme
+clears highlight groups and restores the plugin's default links:
+>
+    vim.api.nvim_create_autocmd("ColorScheme", {
+      callback = function()
+        vim.api.nvim_set_hl(0, "CyclomaticComplexityHigh", { fg = "#EF4444" })
+      end,
+    })
+<
+
+================================================================================
+6. COMMANDS                        *treesitter-cyclomatic-complexity-commands*
 
                                    *:CyclomaticComplexityEnable*
 :CyclomaticComplexityEnable
@@ -141,7 +181,7 @@ Vim configuration variable:
     Refresh complexity display for all open buffers.
 
 ================================================================================
-6. FUNCTIONS                      *treesitter-cyclomatic-complexity-functions*
+7. FUNCTIONS                      *treesitter-cyclomatic-complexity-functions*
 
 require('treesitter-cyclomatic-complexity').setup({opts})
     Initialize the plugin with configuration options.
@@ -187,7 +227,7 @@ require('treesitter-cyclomatic-complexity.display').get_stats({bufnr})
     }
 
 ================================================================================
-7. EXAMPLES                        *treesitter-cyclomatic-complexity-examples*
+8. EXAMPLES                        *treesitter-cyclomatic-complexity-examples*
 
 Basic setup:
 >

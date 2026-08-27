@@ -12,19 +12,29 @@ local highlight_groups = {
 	very_high = "CyclomaticComplexityVeryHigh",
 }
 
-local function setup_highlight_groups()
-	-- Set up default highlight groups if they don't exist
-	local highlights = {
-		CyclomaticComplexityLow = { fg = "#10B981", bg = "NONE" }, -- Green
-		CyclomaticComplexityMedium = { fg = "#F59E0B", bg = "NONE" }, -- Yellow
-		CyclomaticComplexityHigh = { fg = "#EF4444", bg = "NONE" }, -- Red
-		CyclomaticComplexityVeryHigh = { fg = "#DC2626", bg = "NONE", bold = true }, -- Dark Red, Bold
-	}
+-- Linking rather than hardcoding colors keeps the virtual text in tune with
+-- whatever colorscheme is active, and inherits the `ctermfg` these groups carry,
+-- so the levels stay distinguishable without 'termguicolors'.
+-- The severity a level maps to follows McCabe's limit of 10, which NIST SP
+-- 500-235 2.5 records along with the 15 some projects use instead: anything
+-- within that limit stays informational, and warning starts once it is passed.
+-- DiagnosticHint is avoided on purpose. Most colorschemes leave it at Neovim's
+-- #D3D3D3, which is close enough to Normal to read as uncolored text.
+-- `default = true` is what makes these survive `:colorscheme`: `hi clear` drops
+-- attribute-based definitions but restores default links, so nothing has to
+-- reapply them. It also leaves definitions made by the user or by a colorscheme
+-- untouched, which `vim.fn.hlexists` cannot do: it keeps reporting a group as
+-- existing after `hi clear` has emptied it.
+local default_highlights = {
+	CyclomaticComplexityLow = { link = "Comment", default = true },
+	CyclomaticComplexityMedium = { link = "DiagnosticInfo", default = true },
+	CyclomaticComplexityHigh = { link = "DiagnosticWarn", default = true },
+	CyclomaticComplexityVeryHigh = { link = "DiagnosticError", default = true },
+}
 
-	for group, attrs in pairs(highlights) do
-		if vim.fn.hlexists(group) == 0 then
-			vim.api.nvim_set_hl(0, group, attrs)
-		end
+local function setup_highlight_groups()
+	for group, attrs in pairs(default_highlights) do
+		vim.api.nvim_set_hl(0, group, attrs)
 	end
 end
 
