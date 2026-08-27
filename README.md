@@ -67,7 +67,6 @@ require('treesitter-cyclomatic-complexity').setup({
   auto_update = true,
   display = {
     format = "CC: %d",
-    highlight = "Comment",
     position = "eol"  -- end of line
   },
   thresholds = {
@@ -96,7 +95,6 @@ require('treesitter-cyclomatic-complexity').setup({
 | `enabled`           | boolean | `true`      | Enable/disable the plugin          |
 | `auto_update`       | boolean | `true`      | Auto-update on text changes        |
 | `display.format`    | string  | `"CC: %d"`  | Display format string              |
-| `display.highlight` | string  | `"Comment"` | Highlight group for low complexity |
 | `display.position`  | string  | `"eol"`     | Position of virtual text           |
 | `thresholds.low`    | number  | `5`         | Low complexity threshold           |
 | `thresholds.medium` | number  | `10`        | Medium complexity threshold        |

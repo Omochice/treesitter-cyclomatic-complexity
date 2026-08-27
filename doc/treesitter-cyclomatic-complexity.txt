@@ -79,7 +79,6 @@ Full configuration options:
       auto_update = true,
       display = {
         format = "CC: %d",
-        highlight = "Comment",
         position = "eol"
       },
       thresholds = {

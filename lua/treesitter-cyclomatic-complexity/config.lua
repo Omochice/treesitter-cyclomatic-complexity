@@ -6,7 +6,6 @@ M.defaults = {
 	auto_update = true,
 	display = {
 		format = "CC: %d",
-		highlight = "Comment",
 		position = "eol",
 	},
 	thresholds = {
@@ -59,7 +58,6 @@ M.validate_config = function(config)
 		config.display = M.defaults.display
 	else
 		config.display.format = config.display.format or M.defaults.display.format
-		config.display.highlight = config.display.highlight or M.defaults.display.highlight
 		config.display.position = config.display.position or M.defaults.display.position
 	end
 
