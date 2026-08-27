@@ -7,10 +7,11 @@ CONTENTS                                *treesitter-cyclomatic-complexity-conten
 2. Requirements ........................ |treesitter-cyclomatic-complexity-requirements|
 3. Installation ........................ |treesitter-cyclomatic-complexity-installation|
 4. Configuration ....................... |treesitter-cyclomatic-complexity-configuration|
-5. Highlights .......................... |treesitter-cyclomatic-complexity-highlights|
-6. Commands ............................ |treesitter-cyclomatic-complexity-commands|
-7. Functions ........................... |treesitter-cyclomatic-complexity-functions|
-8. Examples ............................ |treesitter-cyclomatic-complexity-examples|
+5. Metrics ............................. |treesitter-cyclomatic-complexity-metrics|
+6. Highlights .......................... |treesitter-cyclomatic-complexity-highlights|
+7. Commands ............................ |treesitter-cyclomatic-complexity-commands|
+8. Functions ........................... |treesitter-cyclomatic-complexity-functions|
+9. Examples ............................ |treesitter-cyclomatic-complexity-examples|
 
 ================================================================================
 1. INTRODUCTION                        *treesitter-cyclomatic-complexity-intro*
@@ -76,6 +77,7 @@ Full configuration options:
 >
     require('treesitter-cyclomatic-complexity').setup({
       enabled = true,
+      metric = "cyclomatic",
       auto_update = true,
       display = {
         format = "CC: %d",
@@ -114,16 +116,46 @@ Vim configuration variable:
 <
 
 ================================================================================
-5. HIGHLIGHTS                      *treesitter-cyclomatic-complexity-highlights*
+5. METRICS                          *treesitter-cyclomatic-complexity-metrics*
+
+The "metric" option selects what is measured. Both metrics are reported the
+same way, and only one is active at a time.
+
+                                   *treesitter-cyclomatic-complexity-cyclomatic*
+"cyclomatic"
+    The number of linearly independent paths through a function. Its published
+    limit is 10, recorded in NIST SP 500-235 section 2.5.
+
+                                   *treesitter-cyclomatic-complexity-cognitive*
+"cognitive"
+    How hard a function is to understand, penalising nesting. Its published
+    limit is 15, the default of SonarSource's RSPEC-3776.
+
+The two scales differ, so the default thresholds follow the selected metric.
+The bands around each limit keep the same proportions:
+>
+    metric        low   medium   high
+    "cyclomatic"    5       10     15
+    "cognitive"     8       15     23
+<
+"medium" is the limit each metric publishes. "low" and "high" are proportions
+of it, so adjust them when your project has its own standard. Thresholds you set
+yourself are kept as they are, and the metric's defaults fill in whichever
+ones you leave out. They are resolved when setup() runs, so changing "metric"
+through set_config() later does not move thresholds that were already
+resolved.
+
+================================================================================
+6. HIGHLIGHTS                      *treesitter-cyclomatic-complexity-highlights*
 
 Each complexity level has its own highlight group. The defaults link to groups
 the colorscheme already defines, so the virtual text follows the active theme
 and inherits its ctermfg value. Low complexity is the common case, so it
 links to Comment and stays out of the way.
 
-Which severity a level maps to follows McCabe's limit of 10, recorded in NIST
-SP 500-235 section 2.5 along with the 15 some projects use instead. Complexity
-within that limit stays informational, and warning starts once it is passed.
+Which severity a level maps to follows the limit of the selected metric, as
+described in |treesitter-cyclomatic-complexity-metrics|. Complexity within that
+limit stays informational, and warning starts once it is passed.
 
                                    *hl-CyclomaticComplexityLow*
 CyclomaticComplexityLow
@@ -153,7 +185,7 @@ clears highlight groups and restores the plugin's default links:
 <
 
 ================================================================================
-6. COMMANDS                        *treesitter-cyclomatic-complexity-commands*
+7. COMMANDS                        *treesitter-cyclomatic-complexity-commands*
 
                                    *:CyclomaticComplexityEnable*
 :CyclomaticComplexityEnable
@@ -180,7 +212,7 @@ clears highlight groups and restores the plugin's default links:
     Refresh complexity display for all open buffers.
 
 ================================================================================
-7. FUNCTIONS                      *treesitter-cyclomatic-complexity-functions*
+8. FUNCTIONS                      *treesitter-cyclomatic-complexity-functions*
 
 require('treesitter-cyclomatic-complexity').setup({opts})
     Initialize the plugin with configuration options.
@@ -226,7 +258,7 @@ require('treesitter-cyclomatic-complexity.display').get_stats({bufnr})
     }
 
 ================================================================================
-8. EXAMPLES                        *treesitter-cyclomatic-complexity-examples*
+9. EXAMPLES                        *treesitter-cyclomatic-complexity-examples*
 
 Basic setup:
 >

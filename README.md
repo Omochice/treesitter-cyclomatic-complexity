@@ -64,6 +64,7 @@ require('treesitter-cyclomatic-complexity').setup()
 ```lua
 require('treesitter-cyclomatic-complexity').setup({
   enabled = true,
+  metric = "cyclomatic",
   auto_update = true,
   display = {
     format = "CC: %d",
@@ -90,16 +91,17 @@ require('treesitter-cyclomatic-complexity').setup({
 
 ### Configuration Options
 
-| Option              | Type    | Default     | Description                        |
-| ------------------- | ------- | ----------- | ---------------------------------- |
-| `enabled`           | boolean | `true`      | Enable/disable the plugin          |
-| `auto_update`       | boolean | `true`      | Auto-update on text changes        |
-| `display.format`    | string  | `"CC: %d"`  | Display format string              |
-| `display.position`  | string  | `"eol"`     | Position of virtual text           |
-| `thresholds.low`    | number  | `5`         | Low complexity threshold           |
-| `thresholds.medium` | number  | `10`        | Medium complexity threshold        |
-| `thresholds.high`   | number  | `15`        | High complexity threshold          |
-| `languages.*`       | boolean | `true`      | Enable/disable specific languages  |
+| Option              | Type    | Default          | Description                                |
+| ------------------- | ------- | ---------------- | ------------------------------------------ |
+| `enabled`           | boolean | `true`           | Enable/disable the plugin                  |
+| `metric`            | string  | `"cyclomatic"`   | Metric to measure, see [Metrics](#metrics) |
+| `auto_update`       | boolean | `true`           | Auto-update on text changes                |
+| `display.format`    | string  | `"CC: %d"`       | Display format string                      |
+| `display.position`  | string  | `"eol"`          | Position of virtual text                   |
+| `thresholds.low`    | number  | metric-dependent | Low complexity threshold                   |
+| `thresholds.medium` | number  | metric-dependent | Medium complexity threshold                |
+| `thresholds.high`   | number  | metric-dependent | High complexity threshold                  |
+| `languages.*`       | boolean | `true`           | Enable/disable specific languages          |
 
 ### Vim Configuration
 
@@ -233,6 +235,34 @@ function complex(data)
 end
 ```
 
+## Metrics
+
+`metric` selects what is measured. Both metrics are reported the same way, and
+only one is active at a time.
+
+| Metric         | Measures                                                    | Published limit |
+| -------------- | ----------------------------------------------------------- | --------------- |
+| `"cyclomatic"` | The number of linearly independent paths through a function | 10              |
+| `"cognitive"`  | How hard a function is to understand, penalising nesting    | 15              |
+
+The two scales differ, so the default thresholds follow the selected metric.
+Cyclomatic complexity is anchored on McCabe's limit of 10, recorded in
+[NIST SP 500-235](https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication500-235.pdf)
+section 2.5. Cognitive complexity is anchored on 15, the default of SonarSource's RSPEC-3776,
+stated in [its rule documentation](https://github.com/SonarSource/eslint-plugin-sonarjs/blob/master/docs/rules/cognitive-complexity.md).
+The bands around each limit keep the same proportions.
+
+| Metric         | `thresholds.low` | `thresholds.medium` | `thresholds.high` |
+| -------------- | ---------------- | ------------------- | ----------------- |
+| `"cyclomatic"` | 5                | 10                  | 15                |
+| `"cognitive"`  | 8                | 15                  | 23                |
+
+`medium` is the limit each metric publishes. `low` and `high` are proportions of
+it, so adjust them when your project has its own standard. Thresholds you set yourself are kept
+as they are, and the metric's defaults fill in whichever ones you leave out. They
+are resolved when `setup()` runs, so changing `metric` through `set_config()` later
+does not move thresholds that were already resolved.
+
 ## Color Coding
 
 Each complexity level has its own highlight group. The defaults link to groups the
@@ -240,10 +270,9 @@ colorscheme already defines, so the virtual text follows the active theme and
 inherits its `ctermfg`. Low complexity is the common case, so it links to `Comment`
 and stays out of the way.
 
-Which severity a level maps to follows McCabe's limit of 10, recorded in
-[NIST SP 500-235](https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication500-235.pdf)
-section 2.5 along with the 15 some projects use instead. Complexity within that
-limit stays informational, and warning starts once it is passed.
+Which severity a level maps to follows the limit of the selected metric, as
+described in [Metrics](#metrics). Complexity within that limit stays
+informational, and warning starts once it is passed.
 
 | Level     | Complexity | Highlight group                | Default                           |
 | --------- | ---------- | ------------------------------ | --------------------------------- |
