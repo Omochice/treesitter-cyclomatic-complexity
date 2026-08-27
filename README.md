@@ -348,7 +348,7 @@ To add support for a new language:
 
 ## License
 
-MIT License - see LICENSE file for details
+zlib License - see LICENSE file for details
 
 ## Related Projects
 
