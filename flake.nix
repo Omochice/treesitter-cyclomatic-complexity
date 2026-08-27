@@ -139,14 +139,14 @@
           '';
         testScript = pkgs.writeShellScriptBin "test" ''
           cd "$(${pkgs.lib.getExe pkgs.git} rev-parse --show-toplevel)"
-          ${neovim}/bin/nvim --headless --clean -u ${initVim}/init.vim -l test/run.lua
+          ${pkgs.lib.getExe neovim} --headless --clean -u ${initVim}/init.vim -l test/run.lua
         '';
         coverageScript = pkgs.writeShellScriptBin "coverage" ''
           cd "$(${pkgs.lib.getExe pkgs.git} rev-parse --show-toplevel)"
-          ${neovim}/bin/nvim --headless --clean -u ${initVimWithCoverage}/init.vim -l test/run.lua
+          ${pkgs.lib.getExe neovim} --headless --clean -u ${initVimWithCoverage}/init.vim -l test/run.lua
           export LUA_PATH="${luacov}/src/?.lua;${luacov}/src/?/init.lua;${pkgs.lua51Packages.datafile}/share/lua/5.1/?.lua;${pkgs.lua51Packages.datafile}/share/lua/5.1/?/init.lua;${luacov-reporter-lcov}/?.lua;${luacov-reporter-lcov}/?/init.lua;;"
-          ${pkgs.lua5_1}/bin/lua ${luacov}/src/bin/luacov -r lcov
-          ${pkgs.gnused}/bin/sed -i "s|SF:$PWD/|SF:|g" luacov.report.out
+          ${pkgs.lib.getExe pkgs.lua5_1} ${luacov}/src/bin/luacov -r lcov
+          ${pkgs.lib.getExe pkgs.gnused} -i "s|SF:$PWD/|SF:|g" luacov.report.out
         '';
       in
       {
@@ -155,11 +155,11 @@
           # keep-sorted start block=yes
           coverage = {
             type = "app";
-            program = "${coverageScript}/bin/coverage";
+            program = pkgs.lib.getExe coverageScript;
           };
           test = {
             type = "app";
-            program = "${testScript}/bin/test";
+            program = pkgs.lib.getExe testScript;
           };
           # keep-sorted end
         };
