@@ -1,3 +1,5 @@
+local levels = require("treesitter-cyclomatic-complexity.complexity.levels")
+
 local M = {}
 
 M.defaults = {
@@ -6,14 +8,11 @@ M.defaults = {
 	auto_update = true,
 	display = {
 		format = "CC: %d",
-		highlight = "Comment",
 		position = "eol",
 	},
-	thresholds = {
-		low = 5,
-		medium = 10,
-		high = 15,
-	},
+	-- `thresholds` is absent on purpose. Its defaults depend on `metric`, and a
+	-- fixed table here would be merged in before the metric is known, hiding
+	-- whether the values came from the user or from this table.
 	languages = {
 		lua = true,
 		javascript = true,
@@ -59,16 +58,16 @@ M.validate_config = function(config)
 		config.display = M.defaults.display
 	else
 		config.display.format = config.display.format or M.defaults.display.format
-		config.display.highlight = config.display.highlight or M.defaults.display.highlight
 		config.display.position = config.display.position or M.defaults.display.position
 	end
 
+	local default_thresholds = levels.get_default_thresholds(config.metric)
 	if type(config.thresholds) ~= "table" then
-		config.thresholds = M.defaults.thresholds
+		config.thresholds = vim.deepcopy(default_thresholds)
 	else
-		config.thresholds.low = config.thresholds.low or M.defaults.thresholds.low
-		config.thresholds.medium = config.thresholds.medium or M.defaults.thresholds.medium
-		config.thresholds.high = config.thresholds.high or M.defaults.thresholds.high
+		config.thresholds.low = config.thresholds.low or default_thresholds.low
+		config.thresholds.medium = config.thresholds.medium or default_thresholds.medium
+		config.thresholds.high = config.thresholds.high or default_thresholds.high
 	end
 
 	if type(config.languages) ~= "table" then

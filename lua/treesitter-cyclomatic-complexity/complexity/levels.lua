@@ -3,12 +3,30 @@
 
 local M = {}
 
--- Default thresholds for complexity levels
+-- Default thresholds per metric, anchored on the limit each metric publishes:
+-- 10 for cyclomatic, recorded in NIST SP 500-235 2.5, and 15 for cognitive,
+-- which is the default of SonarSource's RSPEC-3776. The bands around each limit
+-- keep the same proportions, so a level means the same thing whichever metric
+-- is selected.
 M.default_thresholds = {
-	low = 5,
-	medium = 10,
-	high = 15,
+	cyclomatic = {
+		low = 5,
+		medium = 10,
+		high = 15,
+	},
+	cognitive = {
+		low = 8,
+		medium = 15,
+		high = 23,
+	},
 }
+
+-- Get the default thresholds for a metric
+-- @param metric string|nil "cyclomatic" | "cognitive"
+-- @return table { low: number, medium: number, high: number }
+M.get_default_thresholds = function(metric)
+	return M.default_thresholds[metric] or M.default_thresholds.cyclomatic
+end
 
 -- Get complexity level based on value and thresholds
 -- @param complexity number The complexity value

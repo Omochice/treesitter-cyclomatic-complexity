@@ -143,6 +143,43 @@ describe("display", function()
 		end)
 	end)
 
+	describe("setup()", function()
+		local original_colorscheme
+
+		local expected_links = {
+			CyclomaticComplexityLow = "Comment",
+			CyclomaticComplexityMedium = "DiagnosticInfo",
+			CyclomaticComplexityHigh = "DiagnosticWarn",
+			CyclomaticComplexityVeryHigh = "DiagnosticError",
+		}
+
+		before_each(function()
+			original_colorscheme = vim.g.colors_name
+		end)
+
+		after_each(function()
+			vim.cmd.colorscheme(original_colorscheme or "default")
+		end)
+
+		describe("given default configuration", function()
+			it("should link each level to a semantic highlight group", function()
+				for group, target in pairs(expected_links) do
+					expect.equality(vim.api.nvim_get_hl(0, { name = group }).link, target)
+				end
+			end)
+		end)
+
+		describe("given a colorscheme loaded after setup", function()
+			it("should keep every complexity highlight group linked", function()
+				vim.cmd.colorscheme("habamax")
+
+				for group, target in pairs(expected_links) do
+					expect.equality(vim.api.nvim_get_hl(0, { name = group }).link, target)
+				end
+			end)
+		end)
+	end)
+
 	describe("get_highlight_group()", function()
 		it("should return correct highlight group for each level", function()
 			local thresholds = { low = 5, medium = 10, high = 15 }
