@@ -52,8 +52,18 @@ M.switch_node = function(children)
 	return M.make_node("switch_statement", children)
 end
 
-M.case_node = function(children)
-	return M.make_node("case_clause", children)
+-- Node types whose name differs between grammars are keyed by language, the
+-- same way make_function is, so a test cannot assert a name the language it
+-- names never produces.
+local case_types = {
+	javascript = "switch_case",
+	typescript = "switch_case",
+	java = "switch_label",
+	go = "expression_case",
+}
+
+M.case_node = function(lang, children)
+	return M.make_node(case_types[lang] or "case_statement", children)
 end
 
 M.try_node = function(children)
@@ -80,16 +90,22 @@ M.nested_function_node = function(children)
 	return M.make_node("function_expression", children)
 end
 
-M.ternary_node = function(children)
-	return M.make_node("conditional_expression", children)
+local ternary_types = {
+	javascript = "ternary_expression",
+	typescript = "ternary_expression",
+	java = "ternary_expression",
+}
+
+M.ternary_node = function(lang, children)
+	return M.make_node(ternary_types[lang] or "conditional_expression", children)
 end
 
-M.ternary_java_node = function(children)
-	return M.make_node("ternary_expression", children)
-end
+local else_types = {
+	lua = "else_statement",
+}
 
-M.else_node = function(children)
-	return M.make_node("else_clause", children)
+M.else_node = function(lang, children)
+	return M.make_node(else_types[lang] or "else_clause", children)
 end
 
 -- Python specific

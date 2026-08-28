@@ -17,21 +17,19 @@ local nesting_incremented = {
 		if_statement = true,
 		for_statement = true,
 		for_in_statement = true,
-		for_of_statement = true,
 		while_statement = true,
 		do_statement = true,
 		switch_statement = true,
-		conditional_expression = true,
+		ternary_expression = true,
 	},
 	typescript = {
 		if_statement = true,
 		for_statement = true,
 		for_in_statement = true,
-		for_of_statement = true,
 		while_statement = true,
 		do_statement = true,
 		switch_statement = true,
-		conditional_expression = true,
+		ternary_expression = true,
 	},
 	python = {
 		if_statement = true,
@@ -68,7 +66,7 @@ local nesting_incremented = {
 	go = {
 		if_statement = true,
 		for_statement = true,
-		switch_statement = true,
+		expression_switch_statement = true,
 		type_switch_statement = true,
 		select_statement = true,
 	},
@@ -85,7 +83,7 @@ local nesting_incremented = {
 -- Nesting for children is inherited from the parent, not further increased
 local basic_increment = {
 	lua = {
-		else_clause = true,
+		else_statement = true,
 		elseif_statement = true,
 	},
 	javascript = {
