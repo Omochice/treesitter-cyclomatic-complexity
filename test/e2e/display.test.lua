@@ -99,7 +99,9 @@ describe("display", function()
 				})
 				vim.bo[bufnr].filetype = "typescript"
 
-				expect.no_error(display.update_display, bufnr)
+				expect.no_error(function()
+					display.update_display(bufnr)
+				end)
 
 				local marks = vim.api.nvim_buf_get_extmarks(bufnr, ns, 0, -1, {})
 				expect.equality(#marks > 0, true)
@@ -117,7 +119,9 @@ describe("display", function()
 				})
 				vim.bo[bufnr].filetype = "javascript"
 
-				expect.no_error(display.update_display, bufnr)
+				expect.no_error(function()
+					display.update_display(bufnr)
+				end)
 
 				local marks = vim.api.nvim_buf_get_extmarks(bufnr, ns, 0, -1, {})
 				expect.equality(#marks > 0, true)
@@ -133,7 +137,9 @@ describe("display", function()
 				})
 				vim.bo[bufnr].filetype = "python"
 
-				expect.no_error(display.update_display, bufnr)
+				expect.no_error(function()
+					display.update_display(bufnr)
+				end)
 
 				local marks = vim.api.nvim_buf_get_extmarks(bufnr, ns, 0, -1, {})
 				expect.equality(#marks > 0, true)

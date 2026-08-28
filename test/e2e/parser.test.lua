@@ -110,9 +110,15 @@ end
 
 					local root = lang_parser:parse()[1]:root()
 
-					expect.no_error(parser.get_function_nodes, bufnr, lang)
-					expect.no_error(parser.get_loop_nodes, bufnr, lang)
-					expect.no_error(parser.get_control_flow_nodes, root, bufnr, lang)
+					expect.no_error(function()
+						parser.get_function_nodes(bufnr, lang)
+					end)
+					expect.no_error(function()
+						parser.get_loop_nodes(bufnr, lang)
+					end)
+					expect.no_error(function()
+						parser.get_control_flow_nodes(root, bufnr, lang)
+					end)
 				end)
 			end)
 		end
