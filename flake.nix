@@ -179,7 +179,32 @@
           ++ actions;
         };
         neovim = pkgs.neovim-unwrapped;
-        treesitter = pkgs.vimPlugins.nvim-treesitter.withAllGrammars;
+        # nvim-treesitter's main branch installs grammars at runtime instead of
+        # shipping them, so `withAllGrammars` now yields a derivation with no
+        # parser in it. Tests then ran against the grammars Neovim bundles, which
+        # cover only c and lua, and every query for the other supported languages
+        # went unexercised. Linking the grammars directly keeps the parsers under
+        # the version control of the nixpkgs pin.
+        treesitter = pkgs.linkFarm "treesitter-parsers" (
+          map (lang: {
+            name = "parser/${lang}.so";
+            path = "${pkgs.tree-sitter-grammars."tree-sitter-${lang}"}/parser";
+          }) supportedLanguages
+        );
+        # Kept in step with the `queries` table in lua/*/parser.lua.
+        supportedLanguages = [
+          # keep-sorted start
+          "c"
+          "cpp"
+          "go"
+          "java"
+          "javascript"
+          "lua"
+          "python"
+          "rust"
+          "typescript"
+          # keep-sorted end
+        ];
         mini = mini-test;
         mkInitVim =
           extraConfig:
