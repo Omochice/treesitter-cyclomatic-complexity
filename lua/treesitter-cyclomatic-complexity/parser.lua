@@ -18,6 +18,8 @@ local queries = {
       (repeat_statement) @control
     ]],
 	},
+	-- `for ... of` has no node of its own: the grammar parses it as
+	-- `for_in_statement`, the same node `for ... in` produces.
 	javascript = {
 		functions = [[
       (function_declaration name: (identifier) @name) @function
@@ -28,7 +30,6 @@ local queries = {
 		loops = [[
       (for_statement) @loop
       (for_in_statement) @loop
-      (for_of_statement) @loop
       (while_statement) @loop
       (do_statement) @loop
     ]],
@@ -36,12 +37,11 @@ local queries = {
       (if_statement) @control
       (for_statement) @control
       (for_in_statement) @control
-      (for_of_statement) @control
       (while_statement) @control
       (do_statement) @control
       (switch_statement) @control
       (try_statement) @control
-      (conditional_expression) @control
+      (ternary_expression) @control
     ]],
 	},
 	typescript = {
@@ -54,7 +54,6 @@ local queries = {
 		loops = [[
       (for_statement) @loop
       (for_in_statement) @loop
-      (for_of_statement) @loop
       (while_statement) @loop
       (do_statement) @loop
     ]],
@@ -62,18 +61,18 @@ local queries = {
       (if_statement) @control
       (for_statement) @control
       (for_in_statement) @control
-      (for_of_statement) @control
       (while_statement) @control
       (do_statement) @control
       (switch_statement) @control
       (try_statement) @control
-      (conditional_expression) @control
+      (ternary_expression) @control
     ]],
 	},
 	python = {
+		-- `async def` produces a `function_definition` carrying an `async` token,
+		-- not a node type of its own.
 		functions = [[
       (function_definition name: (identifier) @name) @function
-      (async_function_definition name: (identifier) @name) @function
     ]],
 		loops = [[
       (for_statement) @loop
@@ -163,7 +162,7 @@ local queries = {
 		control_flow = [[
       (if_statement) @control
       (for_statement) @control
-      (switch_statement) @control
+      (expression_switch_statement) @control
       (type_switch_statement) @control
       (select_statement) @control
     ]],
