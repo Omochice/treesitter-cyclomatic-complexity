@@ -14,31 +14,33 @@ local control_flow_patterns = {
 		"while_statement",
 		"repeat_statement",
 	},
+	-- `for ... of` is covered by `for_in_statement`, which is the node the grammar
+	-- produces for it as well as for `for ... in`.
+	-- `switch_default` is left out: SonarQube counts a `case` clause of a `switch`
+	-- and does not count `default`, which adds no branch of its own.
 	javascript = {
 		"if_statement",
 		"for_statement",
 		"for_in_statement",
-		"for_of_statement",
 		"while_statement",
 		"do_statement",
 		"switch_statement",
-		"case_clause",
+		"switch_case",
 		"try_statement",
 		"catch_clause",
-		"conditional_expression",
+		"ternary_expression",
 	},
 	typescript = {
 		"if_statement",
 		"for_statement",
 		"for_in_statement",
-		"for_of_statement",
 		"while_statement",
 		"do_statement",
 		"switch_statement",
-		"case_clause",
+		"switch_case",
 		"try_statement",
 		"catch_clause",
-		"conditional_expression",
+		"ternary_expression",
 	},
 	python = {
 		"if_statement",
@@ -86,7 +88,7 @@ local control_flow_patterns = {
 	go = {
 		"if_statement",
 		"for_statement",
-		"switch_statement",
+		"expression_switch_statement",
 		"type_switch_statement",
 		"select_statement",
 		"expression_case",
