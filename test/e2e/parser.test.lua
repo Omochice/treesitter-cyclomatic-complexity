@@ -96,7 +96,46 @@ end
 		end)
 	end)
 
+	describe("every supported language", function()
+		-- A node type the grammar does not define makes `query.parse` raise, and
+		-- every entry point parses its query before it can return anything, so an
+		-- empty buffer is enough to expose a stale name.
+		for _, lang in ipairs(parser.get_supported_languages()) do
+			describe("given empty " .. lang .. " buffer", function()
+				it("should query without raising", function()
+					local lang_parser = vim.treesitter.get_parser(bufnr, lang)
+					-- Without this the whole group degrades into a nil index error,
+					-- which reads as a plugin bug rather than a missing grammar.
+					expect.equality(lang_parser ~= nil, true)
+
+					local root = lang_parser:parse()[1]:root()
+
+					expect.no_error(parser.get_function_nodes, bufnr, lang)
+					expect.no_error(parser.get_loop_nodes, bufnr, lang)
+					expect.no_error(parser.get_control_flow_nodes, root, bufnr, lang)
+				end)
+			end)
+		end
+	end)
+
 	describe("get_loop_nodes()", function()
+		describe("given typescript buffer with a for-of loop", function()
+			it("should extract the loop node", function()
+				set_buf_content(
+					[[
+for (const n of names) {
+  console.log(n);
+}
+]],
+					"typescript"
+				)
+
+				local nodes = parser.get_loop_nodes(bufnr, "typescript")
+				expect.equality(#nodes, 1)
+				expect.equality(nodes[1].type, "loop")
+			end)
+		end)
+
 		describe("given lua buffer with loops", function()
 			it("should extract loop nodes", function()
 				set_buf_content(
