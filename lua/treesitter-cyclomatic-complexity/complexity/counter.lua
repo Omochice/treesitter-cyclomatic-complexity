@@ -85,10 +85,12 @@ local control_flow_patterns = {
 		"catch_clause",
 		"ternary_expression",
 	},
+	-- `expression_switch_statement` is left out because `expression_case` below
+	-- already accounts for every branch of it, so counting the container as well
+	-- would cost one path too many.
 	go = {
 		"if_statement",
 		"for_statement",
-		"expression_switch_statement",
 		"type_switch_statement",
 		"select_statement",
 		"expression_case",
