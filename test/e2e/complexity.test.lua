@@ -78,7 +78,7 @@ describe("complexity", function()
 		end)
 
 		describe("given go function with a switch statement", function()
-			it("should count the switch as a decision point", function()
+			it("should count the case but not the switch containing it", function()
 				local value = function_complexity({
 					"package main",
 					"",
@@ -91,7 +91,7 @@ describe("complexity", function()
 					"}",
 				}, "go")
 
-				expect.equality(value, 3)
+				expect.equality(value, 2)
 			end)
 		end)
 	end)
