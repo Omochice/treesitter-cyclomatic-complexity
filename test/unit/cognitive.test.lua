@@ -54,7 +54,7 @@ describe("cognitive", function()
 		describe("given else clause", function()
 			it("should return 2 (if:+1+0, else:+1 no nesting penalty)", function()
 				local node_data = helpers.make_function("lua", {
-					helpers.if_node({ helpers.else_node({}) }),
+					helpers.if_node({ helpers.else_node("lua", {}) }),
 				})
 				expect.equality(cognitive.count_complexity(node_data, "lua"), 2)
 			end)
@@ -81,7 +81,7 @@ describe("cognitive", function()
 		describe("given if nested inside else", function()
 			it("should return 4 (if:+1+0, else:+1, inner if:+1+1)", function()
 				local node_data = helpers.make_function("lua", {
-					helpers.if_node({ helpers.else_node({ helpers.if_node({}) }) }),
+					helpers.if_node({ helpers.else_node("lua", { helpers.if_node({}) }) }),
 				})
 				expect.equality(cognitive.count_complexity(node_data, "lua"), 4)
 			end)
@@ -90,9 +90,9 @@ describe("cognitive", function()
 			it("should return 1 (switch:+1+0, cases:+0)", function()
 				local node_data = helpers.make_function("javascript", {
 					helpers.switch_node({
-						helpers.case_node({}),
-						helpers.case_node({}),
-						helpers.case_node({}),
+						helpers.case_node("javascript", {}),
+						helpers.case_node("javascript", {}),
+						helpers.case_node("javascript", {}),
 					}),
 				})
 				expect.equality(cognitive.count_complexity(node_data, "javascript"), 1)
@@ -102,7 +102,7 @@ describe("cognitive", function()
 		describe("given switch nested inside if in javascript", function()
 			it("should return 3 (if:+1+0, switch:+1+1)", function()
 				local node_data = helpers.make_function("javascript", {
-					helpers.if_node({ helpers.switch_node({ helpers.case_node({}) }) }),
+					helpers.if_node({ helpers.switch_node({ helpers.case_node("javascript", {}) }) }),
 				})
 				expect.equality(cognitive.count_complexity(node_data, "javascript"), 3)
 			end)
@@ -127,7 +127,7 @@ describe("cognitive", function()
 		describe("given ternary at nesting 0 in javascript", function()
 			it("should return 1", function()
 				local node_data = helpers.make_function("javascript", {
-					helpers.ternary_node({}),
+					helpers.ternary_node("javascript", {}),
 				})
 				expect.equality(cognitive.count_complexity(node_data, "javascript"), 1)
 			end)
@@ -136,7 +136,7 @@ describe("cognitive", function()
 		describe("given nested ternary in javascript", function()
 			it("should return 3 (outer:+1+0, inner:+1+1)", function()
 				local node_data = helpers.make_function("javascript", {
-					helpers.ternary_node({ helpers.ternary_node({}) }),
+					helpers.ternary_node("javascript", { helpers.ternary_node("javascript", {}) }),
 				})
 				expect.equality(cognitive.count_complexity(node_data, "javascript"), 3)
 			end)
