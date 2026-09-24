@@ -67,7 +67,7 @@ describe("counter", function()
 			it("should return true for control flow nodes", function()
 				expect.equality(counter.is_decision_point("if_statement", "javascript"), true)
 				expect.equality(counter.is_decision_point("switch_statement", "javascript"), true)
-				expect.equality(counter.is_decision_point("case_clause", "javascript"), true)
+				expect.equality(counter.is_decision_point("switch_case", "javascript"), true)
 			end)
 		end)
 
@@ -215,7 +215,7 @@ describe("counter", function()
 		describe("given language-specific nodes", function()
 			it("should count switch cases in javascript", function()
 				local node_data = helpers.make_node("function_declaration", {
-					helpers.switch_node({ helpers.case_node({}), helpers.case_node({}) }),
+					helpers.switch_node({ helpers.case_node("javascript", {}), helpers.case_node("javascript", {}) }),
 				})
 				expect.equality(counter.count_complexity(node_data, "javascript"), 3)
 			end)

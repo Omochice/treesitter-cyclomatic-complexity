@@ -87,6 +87,64 @@ describe("display", function()
 				expect.equality(marks[1][4].virt_text[1][1], "CC: 1")
 			end)
 		end)
+
+		describe("given typescript buffer with a for-of loop", function()
+			it("should mark the function instead of raising", function()
+				vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, {
+					"function greet(names: string[]): void {",
+					"  for (const n of names) {",
+					"    console.log(n);",
+					"  }",
+					"}",
+				})
+				vim.bo[bufnr].filetype = "typescript"
+
+				expect.no_error(function()
+					display.update_display(bufnr)
+				end)
+
+				local marks = vim.api.nvim_buf_get_extmarks(bufnr, ns, 0, -1, {})
+				expect.equality(#marks > 0, true)
+			end)
+		end)
+
+		describe("given javascript buffer with a for-of loop", function()
+			it("should mark the function instead of raising", function()
+				vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, {
+					"function greet(names) {",
+					"  for (const n of names) {",
+					"    console.log(n);",
+					"  }",
+					"}",
+				})
+				vim.bo[bufnr].filetype = "javascript"
+
+				expect.no_error(function()
+					display.update_display(bufnr)
+				end)
+
+				local marks = vim.api.nvim_buf_get_extmarks(bufnr, ns, 0, -1, {})
+				expect.equality(#marks > 0, true)
+			end)
+		end)
+
+		describe("given python buffer with an async function", function()
+			it("should mark the function instead of raising", function()
+				vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, {
+					"async def greet(names):",
+					"    for n in names:",
+					"        print(n)",
+				})
+				vim.bo[bufnr].filetype = "python"
+
+				expect.no_error(function()
+					display.update_display(bufnr)
+				end)
+
+				local marks = vim.api.nvim_buf_get_extmarks(bufnr, ns, 0, -1, {})
+				expect.equality(#marks > 0, true)
+			end)
+		end)
 	end)
 
 	describe("clear_complexity()", function()
