@@ -44,7 +44,7 @@ jobs:
         with:
           persist-credentials: false
       - name: setup nix
-        uses: ./.github/actions/setup-nix
+        uses: $/.github/actions/setup-nix
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - run: nix build ".#checks.$(nix eval --impure --expr builtins.currentSystem).actions"
@@ -59,7 +59,7 @@ jobs:
         with:
           persist-credentials: false
       - name: setup nix
-        uses: ./.github/actions/setup-nix
+        uses: $/.github/actions/setup-nix
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - run: nix flake check
@@ -94,7 +94,7 @@ jobs:
         with:
           persist-credentials: false
       - name: setup nix
-        uses: ./.github/actions/setup-nix
+        uses: $/.github/actions/setup-nix
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Run tests with coverage
