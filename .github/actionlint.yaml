@@ -1,5 +1,3 @@
-# actionlint does not know GitHub's self-repository syntax yet, while zizmor
-# requires it. Drop this once rhysd/actionlint#732 lands in nixpkgs.
 paths:
   .github/**/*.{yml,yaml}:
     ignore:
