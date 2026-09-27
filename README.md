@@ -197,7 +197,7 @@ Decision points include:
 
 - `if/else` statements
 - Loop constructs (`for`, `while`, etc.)
-- `switch/case` statements
+- Each `case` of a `switch` and each arm of a `match`, following SonarQube: the `switch` or `match` itself adds nothing, `default` adds nothing except in C and C++, and a Rust arm whose body is an empty block adds nothing
 - `try/catch` blocks
 - Ternary/conditional operators
 - Logical operators (`&&`, `||`, `and`, `or`)
