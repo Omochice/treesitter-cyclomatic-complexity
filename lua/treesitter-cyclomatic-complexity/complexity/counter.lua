@@ -6,6 +6,9 @@ local operators = require("treesitter-cyclomatic-complexity.complexity.operators
 local M = {}
 
 -- Control flow patterns for each supported language
+-- A switch or match is left out of every table: SonarQube counts only its
+-- branches, which the tables list, so counting the construct as well would cost
+-- one path too many.
 local control_flow_patterns = {
 	lua = {
 		"if_statement",
@@ -24,7 +27,6 @@ local control_flow_patterns = {
 		"for_in_statement",
 		"while_statement",
 		"do_statement",
-		"switch_statement",
 		"switch_case",
 		"try_statement",
 		"catch_clause",
@@ -36,7 +38,6 @@ local control_flow_patterns = {
 		"for_in_statement",
 		"while_statement",
 		"do_statement",
-		"switch_statement",
 		"switch_case",
 		"try_statement",
 		"catch_clause",
@@ -57,7 +58,6 @@ local control_flow_patterns = {
 		"for_statement",
 		"while_statement",
 		"do_statement",
-		"switch_statement",
 		"case_statement",
 		"conditional_expression",
 	},
@@ -67,7 +67,6 @@ local control_flow_patterns = {
 		"while_statement",
 		"do_statement",
 		"for_range_loop",
-		"switch_statement",
 		"case_statement",
 		"try_statement",
 		"catch_clause",
@@ -79,26 +78,20 @@ local control_flow_patterns = {
 		"enhanced_for_statement",
 		"while_statement",
 		"do_statement",
-		"switch_expression",
 		"switch_label",
 		"try_statement",
 		"catch_clause",
 		"ternary_expression",
 	},
-	-- `expression_switch_statement` is left out because `expression_case` below
-	-- already accounts for every branch of it, so counting the container as well
-	-- would cost one path too many.
 	go = {
 		"if_statement",
 		"for_statement",
-		"type_switch_statement",
 		"select_statement",
 		"expression_case",
 		"type_case",
 	},
 	rust = {
 		"if_expression",
-		"match_expression",
 		"match_arm",
 		"loop_expression",
 		"for_expression",
