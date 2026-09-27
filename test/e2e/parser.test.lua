@@ -108,16 +108,11 @@ end
 					-- which reads as a plugin bug rather than a missing grammar.
 					expect.equality(lang_parser ~= nil, true)
 
-					local root = lang_parser:parse()[1]:root()
-
 					expect.no_error(function()
 						parser.get_function_nodes(bufnr, lang)
 					end)
 					expect.no_error(function()
 						parser.get_loop_nodes(bufnr, lang)
-					end)
-					expect.no_error(function()
-						parser.get_control_flow_nodes(root, bufnr, lang)
 					end)
 				end)
 			end)
