@@ -140,31 +140,40 @@ M.is_logical_operator = function(operator, lang)
 	return lang_operators[operator] == true
 end
 
--- The Java grammar parses `default` as a `switch_label` just like `case`, and
--- SonarQube counts only `case`, so the label has to be told apart by its token.
-local function is_java_default_label(node, lang)
-	local first = node.children and node.children[1]
-	return lang == "java" and node.type == "switch_label" and first ~= nil and first.type == "default"
-end
-
--- SonarQube's Rust analyzer skips an arm whose value is an empty block. The
--- node data keeps no field names, so the value is the block after `=>`, and an
--- empty one holds nothing but its braces.
-local function is_rust_empty_arm(node, lang)
-	if lang ~= "rust" or node.type ~= "match_arm" then
-		return false
-	end
-	for _, child in ipairs(node.children or {}) do
-		if child.type == "block" then
-			for _, token in ipairs(child.children or {}) do
-				if token.type ~= "{" and token.type ~= "}" then
-					return false
+-- Branches that a counted node type also covers but SonarQube leaves out, keyed
+-- by language and node type, because the type alone cannot tell them apart.
+local uncounted_branches = {
+	-- The grammar parses `default` as a `switch_label` just like `case`, and
+	-- only `case` counts, so the label is told apart by its token.
+	java = {
+		switch_label = function(node)
+			local first = node.children[1]
+			return first ~= nil and first.type == "default"
+		end,
+	},
+	-- An arm whose value is an empty block is skipped. The node data keeps no
+	-- field names, so the value is the block after `=>`, and an empty one holds
+	-- nothing but its braces.
+	rust = {
+		match_arm = function(node)
+			for _, child in ipairs(node.children) do
+				if child.type == "block" then
+					for _, token in ipairs(child.children) do
+						if token.type ~= "{" and token.type ~= "}" then
+							return false
+						end
+					end
+					return true
 				end
 			end
-			return true
-		end
-	end
-	return false
+			return false
+		end,
+	},
+}
+
+local function is_uncounted_branch(node, lang)
+	local is_uncounted = (uncounted_branches[lang] or {})[node.type]
+	return is_uncounted ~= nil and is_uncounted(node)
 end
 
 -- Count complexity from a structured node representation
@@ -182,11 +191,7 @@ M.count_complexity = function(node_data, lang)
 		local node_type = node.type
 
 		-- Check if this node is a decision point
-		if
-			M.is_decision_point(node_type, lang)
-			and not is_java_default_label(node, lang)
-			and not is_rust_empty_arm(node, lang)
-		then
+		if M.is_decision_point(node_type, lang) and not is_uncounted_branch(node, lang) then
 			count = count + 1
 		end
 
