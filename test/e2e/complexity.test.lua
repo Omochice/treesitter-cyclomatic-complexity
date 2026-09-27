@@ -13,7 +13,11 @@ local function function_complexity(lines, lang)
 	vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, lines)
 	vim.bo[bufnr].filetype = lang
 
-	local nodes = parser.get_function_nodes(bufnr, lang)
+	-- The C and C++ queries also capture a bare `function_declarator` so that
+	-- prototypes get a mark, which makes a definition show up twice.
+	local nodes = vim.tbl_filter(function(node)
+		return node.node:type() ~= "function_declarator"
+	end, parser.get_function_nodes(bufnr, lang))
 	expect.equality(#nodes, 1)
 
 	return complexity.calculate_function_complexity_from_node(nodes[1].node, bufnr, lang)
@@ -47,7 +51,7 @@ describe("complexity", function()
 		end)
 
 		describe("given typescript function with a switch case", function()
-			it("should count the case as a decision point", function()
+			it("should count the case but not the switch containing it", function()
 				local value = function_complexity({
 					"function pick(x: number): number {",
 					"  switch (x) {",
@@ -58,7 +62,7 @@ describe("complexity", function()
 					"}",
 				}, "typescript")
 
-				expect.equality(value, 3)
+				expect.equality(value, 2)
 			end)
 
 			it("should not count an added default as a decision point", function()
@@ -72,6 +76,107 @@ describe("complexity", function()
 					"  }",
 					"}",
 				}, "typescript")
+
+				expect.equality(value, 2)
+			end)
+		end)
+
+		describe("given javascript function with a switch case", function()
+			it("should count the case but not the switch containing it", function()
+				local value = function_complexity({
+					"function pick(x) {",
+					"  switch (x) {",
+					"    case 1:",
+					"      return 1;",
+					"  }",
+					"  return 0;",
+					"}",
+				}, "javascript")
+
+				expect.equality(value, 2)
+			end)
+		end)
+
+		describe("given java method with a switch case", function()
+			it("should count the case but not the switch containing it", function()
+				local value = function_complexity({
+					"class A {",
+					"  int pick(int x) {",
+					"    switch (x) {",
+					"      case 1:",
+					"        return 1;",
+					"    }",
+					"    return 0;",
+					"  }",
+					"}",
+				}, "java")
+
+				expect.equality(value, 2)
+			end)
+		end)
+
+		describe("given c function with a switch case and default", function()
+			it("should count the case and the default but not the switch", function()
+				local value = function_complexity({
+					"int pick(int x) {",
+					"  switch (x) {",
+					"    case 1:",
+					"      return 1;",
+					"    default:",
+					"      return 0;",
+					"  }",
+					"}",
+				}, "c")
+
+				expect.equality(value, 3)
+			end)
+		end)
+
+		describe("given cpp function with a switch case and default", function()
+			it("should count the case and the default but not the switch", function()
+				local value = function_complexity({
+					"int pick(int x) {",
+					"  switch (x) {",
+					"    case 1:",
+					"      return 1;",
+					"    default:",
+					"      return 0;",
+					"  }",
+					"}",
+				}, "cpp")
+
+				expect.equality(value, 3)
+			end)
+		end)
+
+		describe("given go function with a type switch", function()
+			it("should count the case but not the type switch containing it", function()
+				local value = function_complexity({
+					"package main",
+					"",
+					"func pick(x any) int {",
+					"\tswitch x.(type) {",
+					"\tcase int:",
+					"\t\treturn 1",
+					"\t}",
+					"\treturn 0",
+					"}",
+				}, "go")
+
+				expect.equality(value, 2)
+			end)
+		end)
+
+		describe("given rust function with a match", function()
+			it("should count every arm but not the match containing them", function()
+				local value = function_complexity({
+					"fn pick(x: i32) -> i32 {",
+					"    match x {",
+					"        1 => 1,",
+					"        _ => 0,",
+					"    }",
+					"}",
+				}, "rust")
 
 				expect.equality(value, 3)
 			end)

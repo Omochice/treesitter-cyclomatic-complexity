@@ -21,7 +21,7 @@ describe("counter", function()
 				local patterns = counter.get_patterns("javascript")
 				expect.equality(type(patterns), "table")
 				expect.equality(vim.tbl_contains(patterns, "if_statement"), true)
-				expect.equality(vim.tbl_contains(patterns, "switch_statement"), true)
+				expect.equality(vim.tbl_contains(patterns, "switch_case"), true)
 				expect.equality(vim.tbl_contains(patterns, "try_statement"), true)
 			end)
 		end)
@@ -66,7 +66,6 @@ describe("counter", function()
 		describe("given javascript", function()
 			it("should return true for control flow nodes", function()
 				expect.equality(counter.is_decision_point("if_statement", "javascript"), true)
-				expect.equality(counter.is_decision_point("switch_statement", "javascript"), true)
 				expect.equality(counter.is_decision_point("switch_case", "javascript"), true)
 			end)
 		end)
@@ -76,6 +75,23 @@ describe("counter", function()
 				expect.equality(counter.is_decision_point("if_statement", "python"), true)
 				expect.equality(counter.is_decision_point("elif_clause", "python"), true)
 				expect.equality(counter.is_decision_point("except_clause", "python"), true)
+			end)
+		end)
+
+		describe("given a switch or match", function()
+			it("should not treat the construct itself as a decision point", function()
+				local containers = {
+					javascript = "switch_statement",
+					typescript = "switch_statement",
+					java = "switch_expression",
+					c = "switch_statement",
+					cpp = "switch_statement",
+					go = "type_switch_statement",
+					rust = "match_expression",
+				}
+				for lang, container in pairs(containers) do
+					expect.equality({ lang, counter.is_decision_point(container, lang) }, { lang, false })
+				end
 			end)
 		end)
 
@@ -213,11 +229,11 @@ describe("counter", function()
 		end)
 
 		describe("given language-specific nodes", function()
-			it("should count switch cases in javascript", function()
+			it("should count switch cases but not the switch in javascript", function()
 				local node_data = helpers.make_node("function_declaration", {
 					helpers.switch_node({ helpers.case_node("javascript", {}), helpers.case_node("javascript", {}) }),
 				})
-				expect.equality(counter.count_complexity(node_data, "javascript"), 3)
+				expect.equality(counter.count_complexity(node_data, "javascript"), 2)
 			end)
 
 			it("should count try-catch in javascript", function()
