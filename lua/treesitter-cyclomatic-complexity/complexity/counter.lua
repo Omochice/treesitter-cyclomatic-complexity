@@ -147,6 +147,26 @@ local function is_java_default_label(node, lang)
 	return lang == "java" and node.type == "switch_label" and first ~= nil and first.type == "default"
 end
 
+-- SonarQube's Rust analyzer skips an arm whose value is an empty block. The
+-- node data keeps no field names, so the value is the block after `=>`, and an
+-- empty one holds nothing but its braces.
+local function is_rust_empty_arm(node, lang)
+	if lang ~= "rust" or node.type ~= "match_arm" then
+		return false
+	end
+	for _, child in ipairs(node.children or {}) do
+		if child.type == "block" then
+			for _, token in ipairs(child.children or {}) do
+				if token.type ~= "{" and token.type ~= "}" then
+					return false
+				end
+			end
+			return true
+		end
+	end
+	return false
+end
+
 -- Count complexity from a structured node representation
 -- @param node_data table { type: string, children: table[], operator?: string }
 -- @param lang string Language identifier
@@ -162,7 +182,11 @@ M.count_complexity = function(node_data, lang)
 		local node_type = node.type
 
 		-- Check if this node is a decision point
-		if M.is_decision_point(node_type, lang) and not is_java_default_label(node, lang) then
+		if
+			M.is_decision_point(node_type, lang)
+			and not is_java_default_label(node, lang)
+			and not is_rust_empty_arm(node, lang)
+		then
 			count = count + 1
 		end
 
