@@ -280,6 +280,24 @@ describe("complexity", function()
 			end)
 		end)
 
+		describe("given typescript function with a switch of two cases", function()
+			it("should increment once for the switch, not per case", function()
+				local value = function_complexity({
+					"function pick(x: number): number {",
+					"  switch (x) {",
+					"    case 1:",
+					"      return 1;",
+					"    case 2:",
+					"      return 2;",
+					"  }",
+					"  return 0;",
+					"}",
+				}, "typescript")
+
+				expect.equality(value, 1)
+			end)
+		end)
+
 		describe("given go function with a switch statement", function()
 			it("should increment for the switch", function()
 				local value = function_complexity({
