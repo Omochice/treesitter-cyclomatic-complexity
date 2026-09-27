@@ -197,6 +197,23 @@ describe("complexity", function()
 
 				expect.equality(value, 2)
 			end)
+
+			it("should not count an added default as a decision point", function()
+				local value = function_complexity({
+					"package main",
+					"",
+					"func pick(x any) int {",
+					"\tswitch x.(type) {",
+					"\tcase int:",
+					"\t\treturn 1",
+					"\tdefault:",
+					"\t\treturn 0",
+					"\t}",
+					"}",
+				}, "go")
+
+				expect.equality(value, 2)
+			end)
 		end)
 
 		describe("given rust function with a match", function()
