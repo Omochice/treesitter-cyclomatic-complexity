@@ -140,6 +140,13 @@ M.is_logical_operator = function(operator, lang)
 	return lang_operators[operator] == true
 end
 
+-- The Java grammar parses `default` as a `switch_label` just like `case`, and
+-- SonarQube counts only `case`, so the label has to be told apart by its token.
+local function is_java_default_label(node, lang)
+	local first = node.children and node.children[1]
+	return lang == "java" and node.type == "switch_label" and first ~= nil and first.type == "default"
+end
+
 -- Count complexity from a structured node representation
 -- @param node_data table { type: string, children: table[], operator?: string }
 -- @param lang string Language identifier
@@ -155,7 +162,7 @@ M.count_complexity = function(node_data, lang)
 		local node_type = node.type
 
 		-- Check if this node is a decision point
-		if M.is_decision_point(node_type, lang) then
+		if M.is_decision_point(node_type, lang) and not is_java_default_label(node, lang) then
 			count = count + 1
 		end
 
