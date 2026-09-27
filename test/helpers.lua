@@ -53,8 +53,8 @@ M.switch_node = function(children)
 end
 
 -- Node types whose name differs between grammars are keyed by language, the
--- same way make_function is, so a test cannot assert a name the language it
--- names never produces.
+-- same way make_function is, so a test cannot assert a node type its
+-- language's grammar never produces.
 local case_types = {
 	javascript = "switch_case",
 	typescript = "switch_case",
