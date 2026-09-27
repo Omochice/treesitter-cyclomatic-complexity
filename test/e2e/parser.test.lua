@@ -96,7 +96,47 @@ end
 		end)
 	end)
 
+	describe("every supported language", function()
+		-- A node type the grammar does not define makes `query.parse` raise, and
+		-- every entry point parses its query before it can return anything, so an
+		-- empty buffer is enough to expose a stale name.
+		for _, lang in ipairs(parser.get_supported_languages()) do
+			describe("given empty " .. lang .. " buffer", function()
+				it("should query without raising", function()
+					local lang_parser = vim.treesitter.get_parser(bufnr, lang)
+					-- Without this the whole group degrades into a nil index error,
+					-- which reads as a plugin bug rather than a missing grammar.
+					expect.equality(lang_parser ~= nil, true)
+
+					expect.no_error(function()
+						parser.get_function_nodes(bufnr, lang)
+					end)
+					expect.no_error(function()
+						parser.get_loop_nodes(bufnr, lang)
+					end)
+				end)
+			end)
+		end
+	end)
+
 	describe("get_loop_nodes()", function()
+		describe("given typescript buffer with a for-of loop", function()
+			it("should extract the loop node", function()
+				set_buf_content(
+					[[
+for (const n of names) {
+  console.log(n);
+}
+]],
+					"typescript"
+				)
+
+				local nodes = parser.get_loop_nodes(bufnr, "typescript")
+				expect.equality(#nodes, 1)
+				expect.equality(nodes[1].type, "loop")
+			end)
+		end)
+
 		describe("given lua buffer with loops", function()
 			it("should extract loop nodes", function()
 				set_buf_content(
@@ -142,47 +182,6 @@ end
 				expect.equality(type(data.type), "string")
 				expect.equality(type(data.children), "table")
 				expect.equality(has_type(data, "if_statement"), true)
-			end)
-		end)
-	end)
-
-	describe("get_function_nodes_with_data()", function()
-		describe("given lua buffer", function()
-			it("should return nodes with node_data and metadata", function()
-				set_buf_content(
-					[[
-local function foo()
-  return 1
-end
-]],
-					"lua"
-				)
-
-				local results = parser.get_function_nodes_with_data(bufnr, "lua")
-				expect.equality(#results >= 1, true)
-				expect.equality(type(results[1].node_data), "table")
-				expect.equality(results[1].type, "function")
-				expect.equality(type(results[1].start_row), "number")
-			end)
-		end)
-	end)
-
-	describe("get_loop_nodes_with_data()", function()
-		describe("given lua buffer", function()
-			it("should return loop nodes with node_data and metadata", function()
-				set_buf_content(
-					[[
-for i = 1, 10 do
-  print(i)
-end
-]],
-					"lua"
-				)
-
-				local results = parser.get_loop_nodes_with_data(bufnr, "lua")
-				expect.equality(#results >= 1, true)
-				expect.equality(type(results[1].node_data), "table")
-				expect.equality(results[1].type, "loop")
 			end)
 		end)
 	end)

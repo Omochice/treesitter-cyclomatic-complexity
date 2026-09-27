@@ -11,13 +11,9 @@ local queries = {
       (while_statement) @loop
       (repeat_statement) @loop
     ]],
-		control_flow = [[
-      (if_statement) @control
-      (for_statement) @control
-      (while_statement) @control
-      (repeat_statement) @control
-    ]],
 	},
+	-- `for ... of` has no node of its own: the grammar parses it as
+	-- `for_in_statement`, the same node `for ... in` produces.
 	javascript = {
 		functions = [[
       (function_declaration name: (identifier) @name) @function
@@ -28,20 +24,8 @@ local queries = {
 		loops = [[
       (for_statement) @loop
       (for_in_statement) @loop
-      (for_of_statement) @loop
       (while_statement) @loop
       (do_statement) @loop
-    ]],
-		control_flow = [[
-      (if_statement) @control
-      (for_statement) @control
-      (for_in_statement) @control
-      (for_of_statement) @control
-      (while_statement) @control
-      (do_statement) @control
-      (switch_statement) @control
-      (try_statement) @control
-      (conditional_expression) @control
     ]],
 	},
 	typescript = {
@@ -54,38 +38,19 @@ local queries = {
 		loops = [[
       (for_statement) @loop
       (for_in_statement) @loop
-      (for_of_statement) @loop
       (while_statement) @loop
       (do_statement) @loop
     ]],
-		control_flow = [[
-      (if_statement) @control
-      (for_statement) @control
-      (for_in_statement) @control
-      (for_of_statement) @control
-      (while_statement) @control
-      (do_statement) @control
-      (switch_statement) @control
-      (try_statement) @control
-      (conditional_expression) @control
-    ]],
 	},
 	python = {
+		-- `async def` produces a `function_definition` carrying an `async` token,
+		-- not a node type of its own.
 		functions = [[
       (function_definition name: (identifier) @name) @function
-      (async_function_definition name: (identifier) @name) @function
     ]],
 		loops = [[
       (for_statement) @loop
       (while_statement) @loop
-    ]],
-		control_flow = [[
-      (if_statement) @control
-      (for_statement) @control
-      (while_statement) @control
-      (try_statement) @control
-      (with_statement) @control
-      (conditional_expression) @control
     ]],
 	},
 	c = {
@@ -97,14 +62,6 @@ local queries = {
       (for_statement) @loop
       (while_statement) @loop
       (do_statement) @loop
-    ]],
-		control_flow = [[
-      (if_statement) @control
-      (for_statement) @control
-      (while_statement) @control
-      (do_statement) @control
-      (switch_statement) @control
-      (conditional_expression) @control
     ]],
 	},
 	cpp = {
@@ -118,16 +75,6 @@ local queries = {
       (do_statement) @loop
       (for_range_loop) @loop
     ]],
-		control_flow = [[
-      (if_statement) @control
-      (for_statement) @control
-      (while_statement) @control
-      (do_statement) @control
-      (for_range_loop) @control
-      (switch_statement) @control
-      (try_statement) @control
-      (conditional_expression) @control
-    ]],
 	},
 	java = {
 		functions = [[
@@ -140,16 +87,6 @@ local queries = {
       (while_statement) @loop
       (do_statement) @loop
     ]],
-		control_flow = [[
-      (if_statement) @control
-      (for_statement) @control
-      (enhanced_for_statement) @control
-      (while_statement) @control
-      (do_statement) @control
-      (switch_expression) @control
-      (try_statement) @control
-      (ternary_expression) @control
-    ]],
 	},
 	go = {
 		functions = [[
@@ -160,13 +97,6 @@ local queries = {
       (for_statement) @loop
       (range_clause) @loop
     ]],
-		control_flow = [[
-      (if_statement) @control
-      (for_statement) @control
-      (switch_statement) @control
-      (type_switch_statement) @control
-      (select_statement) @control
-    ]],
 	},
 	rust = {
 		functions = [[
@@ -176,13 +106,6 @@ local queries = {
       (loop_expression) @loop
       (for_expression) @loop
       (while_expression) @loop
-    ]],
-		control_flow = [[
-      (if_expression) @control
-      (match_expression) @control
-      (loop_expression) @control
-      (for_expression) @control
-      (while_expression) @control
     ]],
 	},
 }
@@ -267,33 +190,8 @@ M.get_loop_nodes = function(bufnr, lang)
 	return nodes
 end
 
-M.get_control_flow_nodes = function(node, bufnr, lang)
-	if not M.is_language_supported(lang) then
-		return {}
-	end
-
-	local query = vim.treesitter.query.parse(lang, queries[lang].control_flow)
-	local control_nodes = {}
-
-	for _, control_node in query:iter_captures(node, bufnr) do
-		table.insert(control_nodes, control_node)
-	end
-
-	return control_nodes
-end
-
 M.get_node_text = function(node, bufnr)
 	return vim.treesitter.get_node_text(node, bufnr)
-end
-
-M.get_node_range = function(node)
-	local start_row, start_col, end_row, end_col = node:range()
-	return {
-		start_row = start_row,
-		start_col = start_col,
-		end_row = end_row,
-		end_col = end_col,
-	}
 end
 
 -- Convert treesitter node to structured data for pure calculation functions
@@ -339,54 +237,6 @@ M.node_to_data = function(node, bufnr)
 	end
 
 	return result
-end
-
--- Get function nodes with structured data for calculation
--- @param bufnr number
--- @param lang string
--- @return table[] Array of { node_data: table, start_row: number, type: string }
-M.get_function_nodes_with_data = function(bufnr, lang)
-	local nodes = M.get_function_nodes(bufnr, lang)
-	local results = {}
-
-	for _, node_info in ipairs(nodes) do
-		local node_data = M.node_to_data(node_info.node, bufnr)
-		table.insert(results, {
-			node = node_info.node, -- Keep original for backward compatibility
-			node_data = node_data,
-			start_row = node_info.start_row,
-			start_col = node_info.start_col,
-			end_row = node_info.end_row,
-			end_col = node_info.end_col,
-			type = "function",
-		})
-	end
-
-	return results
-end
-
--- Get loop nodes with structured data for calculation
--- @param bufnr number
--- @param lang string
--- @return table[] Array of { node_data: table, start_row: number, type: string }
-M.get_loop_nodes_with_data = function(bufnr, lang)
-	local nodes = M.get_loop_nodes(bufnr, lang)
-	local results = {}
-
-	for _, node_info in ipairs(nodes) do
-		local node_data = M.node_to_data(node_info.node, bufnr)
-		table.insert(results, {
-			node = node_info.node, -- Keep original for backward compatibility
-			node_data = node_data,
-			start_row = node_info.start_row,
-			start_col = node_info.start_col,
-			end_row = node_info.end_row,
-			end_col = node_info.end_col,
-			type = "loop",
-		})
-	end
-
-	return results
 end
 
 return M
