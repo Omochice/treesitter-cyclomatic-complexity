@@ -63,6 +63,7 @@ local case_types = {
 }
 
 M.case_node = function(lang, children)
+	assert(type(lang) == "string", "case_node takes the language as its first argument")
 	return M.make_node(case_types[lang] or "case_statement", children)
 end
 
@@ -97,6 +98,7 @@ local ternary_types = {
 }
 
 M.ternary_node = function(lang, children)
+	assert(type(lang) == "string", "ternary_node takes the language as its first argument")
 	return M.make_node(ternary_types[lang] or "conditional_expression", children)
 end
 
@@ -105,6 +107,7 @@ local else_types = {
 }
 
 M.else_node = function(lang, children)
+	assert(type(lang) == "string", "else_node takes the language as its first argument")
 	return M.make_node(else_types[lang] or "else_clause", children)
 end
 
