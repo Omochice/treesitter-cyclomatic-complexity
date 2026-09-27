@@ -244,7 +244,7 @@
               }
               ''
                 cd $src
-                actionlint .github/**/*.{yaml,yml}
+                actionlint -config-file .github/actionlint.yaml .github/**/*.{yaml,yml}
                 ghalint run
                 zizmor .github/workflows .github/actions
                 touch $out
