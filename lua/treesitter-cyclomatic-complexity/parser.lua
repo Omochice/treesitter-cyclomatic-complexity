@@ -194,16 +194,6 @@ M.get_node_text = function(node, bufnr)
 	return vim.treesitter.get_node_text(node, bufnr)
 end
 
-M.get_node_range = function(node)
-	local start_row, start_col, end_row, end_col = node:range()
-	return {
-		start_row = start_row,
-		start_col = start_col,
-		end_row = end_row,
-		end_col = end_col,
-	}
-end
-
 -- Convert treesitter node to structured data for pure calculation functions
 -- @param node userdata Treesitter node
 -- @param bufnr number Buffer number
@@ -247,54 +237,6 @@ M.node_to_data = function(node, bufnr)
 	end
 
 	return result
-end
-
--- Get function nodes with structured data for calculation
--- @param bufnr number
--- @param lang string
--- @return table[] Array of { node_data: table, start_row: number, type: string }
-M.get_function_nodes_with_data = function(bufnr, lang)
-	local nodes = M.get_function_nodes(bufnr, lang)
-	local results = {}
-
-	for _, node_info in ipairs(nodes) do
-		local node_data = M.node_to_data(node_info.node, bufnr)
-		table.insert(results, {
-			node = node_info.node, -- Keep original for backward compatibility
-			node_data = node_data,
-			start_row = node_info.start_row,
-			start_col = node_info.start_col,
-			end_row = node_info.end_row,
-			end_col = node_info.end_col,
-			type = "function",
-		})
-	end
-
-	return results
-end
-
--- Get loop nodes with structured data for calculation
--- @param bufnr number
--- @param lang string
--- @return table[] Array of { node_data: table, start_row: number, type: string }
-M.get_loop_nodes_with_data = function(bufnr, lang)
-	local nodes = M.get_loop_nodes(bufnr, lang)
-	local results = {}
-
-	for _, node_info in ipairs(nodes) do
-		local node_data = M.node_to_data(node_info.node, bufnr)
-		table.insert(results, {
-			node = node_info.node, -- Keep original for backward compatibility
-			node_data = node_data,
-			start_row = node_info.start_row,
-			start_col = node_info.start_col,
-			end_row = node_info.end_row,
-			end_col = node_info.end_col,
-			type = "loop",
-		})
-	end
-
-	return results
 end
 
 return M

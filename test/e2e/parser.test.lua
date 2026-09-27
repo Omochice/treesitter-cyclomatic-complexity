@@ -185,45 +185,4 @@ end
 			end)
 		end)
 	end)
-
-	describe("get_function_nodes_with_data()", function()
-		describe("given lua buffer", function()
-			it("should return nodes with node_data and metadata", function()
-				set_buf_content(
-					[[
-local function foo()
-  return 1
-end
-]],
-					"lua"
-				)
-
-				local results = parser.get_function_nodes_with_data(bufnr, "lua")
-				expect.equality(#results >= 1, true)
-				expect.equality(type(results[1].node_data), "table")
-				expect.equality(results[1].type, "function")
-				expect.equality(type(results[1].start_row), "number")
-			end)
-		end)
-	end)
-
-	describe("get_loop_nodes_with_data()", function()
-		describe("given lua buffer", function()
-			it("should return loop nodes with node_data and metadata", function()
-				set_buf_content(
-					[[
-for i = 1, 10 do
-  print(i)
-end
-]],
-					"lua"
-				)
-
-				local results = parser.get_loop_nodes_with_data(bufnr, "lua")
-				expect.equality(#results >= 1, true)
-				expect.equality(type(results[1].node_data), "table")
-				expect.equality(results[1].type, "loop")
-			end)
-		end)
-	end)
 end)
