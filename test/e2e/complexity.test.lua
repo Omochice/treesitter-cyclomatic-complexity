@@ -229,6 +229,19 @@ describe("complexity", function()
 
 				expect.equality(value, 3)
 			end)
+
+			it("should not count an arm whose value is an empty block", function()
+				local value = function_complexity({
+					"fn pick(x: i32) {",
+					"    match x {",
+					'        1 => println!("one"),',
+					"        _ => {}",
+					"    }",
+					"}",
+				}, "rust")
+
+				expect.equality(value, 2)
+			end)
 		end)
 
 		describe("given go function with a switch statement", function()

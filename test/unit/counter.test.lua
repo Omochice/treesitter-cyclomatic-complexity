@@ -246,6 +246,24 @@ describe("counter", function()
 				expect.equality(counter.count_complexity(node_data, "java"), 1)
 			end)
 
+			it("should count a match arm but not one whose value is an empty block in rust", function()
+				local node_data = helpers.make_node("function_item", {
+					helpers.make_node("match_expression", {
+						helpers.make_node("match_arm", {
+							helpers.make_node("match_pattern", {}),
+							helpers.make_node("=>", {}),
+							helpers.make_node("integer_literal", {}),
+						}),
+						helpers.make_node("match_arm", {
+							helpers.make_node("match_pattern", {}),
+							helpers.make_node("=>", {}),
+							helpers.make_node("block", { helpers.make_node("{", {}), helpers.make_node("}", {}) }),
+						}),
+					}),
+				})
+				expect.equality(counter.count_complexity(node_data, "rust"), 1)
+			end)
+
 			it("should count try-catch in javascript", function()
 				local node_data = helpers.make_node("function_declaration", {
 					helpers.try_node({ helpers.catch_node({}) }),
