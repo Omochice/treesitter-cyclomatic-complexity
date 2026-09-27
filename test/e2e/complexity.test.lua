@@ -113,6 +113,38 @@ describe("complexity", function()
 
 				expect.equality(value, 2)
 			end)
+
+			it("should not count an added default as a decision point", function()
+				local value = function_complexity({
+					"class A {",
+					"  int pick(int x) {",
+					"    switch (x) {",
+					"      case 1:",
+					"        return 1;",
+					"      default:",
+					"        return 0;",
+					"    }",
+					"  }",
+					"}",
+				}, "java")
+
+				expect.equality(value, 2)
+			end)
+
+			it("should not count the default of an arrow switch as a decision point", function()
+				local value = function_complexity({
+					"class A {",
+					"  int pick(int x) {",
+					"    return switch (x) {",
+					"      case 1 -> 1;",
+					"      default -> 0;",
+					"    };",
+					"  }",
+					"}",
+				}, "java")
+
+				expect.equality(value, 2)
+			end)
 		end)
 
 		describe("given c function with a switch case and default", function()

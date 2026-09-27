@@ -236,6 +236,16 @@ describe("counter", function()
 				expect.equality(counter.count_complexity(node_data, "javascript"), 2)
 			end)
 
+			it("should count a case label but not a default label in java", function()
+				local node_data = helpers.make_node("method_declaration", {
+					helpers.switch_node({
+						helpers.make_node("switch_label", { helpers.make_node("case", {}) }),
+						helpers.make_node("switch_label", { helpers.make_node("default", {}) }),
+					}),
+				})
+				expect.equality(counter.count_complexity(node_data, "java"), 1)
+			end)
+
 			it("should count try-catch in javascript", function()
 				local node_data = helpers.make_node("function_declaration", {
 					helpers.try_node({ helpers.catch_node({}) }),
