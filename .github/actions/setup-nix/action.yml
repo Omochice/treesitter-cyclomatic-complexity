@@ -18,6 +18,6 @@ runs:
           access-tokens = github.com=${{ inputs.github-token }}
           extra-substituters = https://nix-community.cachix.org
           extra-trusted-public-keys = nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs=
-    - uses: cachix/cachix-action@5f2d7c5294214f71b873db4b969586b980625e71 # v17
+    - uses: cachix/cachix-action@38b082610b782e7e93e209c35fd730d399dee866 # v17
       with:
         name: omochice
